@@ -22,6 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jws.WebParam;
 
+import psidev.psi.mi.xml.model.EntrySet;
+import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
+import psidev.psi.mi.xml.converter.ConverterException;
+import psidev.psi.mi.tab.converter.tab2xml.Tab2Xml;
+import psidev.psi.mi.tab.converter.tab2xml.XmlConversionException;
+import psidev.psi.mi.tab.PsimiTabReader;
+import psidev.psi.mi.tab.model.BinaryInteraction;
+
+import java.util.Collection;
+import java.io.IOException;
+
 /**
  * TODO write description of the class.
  *
@@ -34,13 +45,40 @@ public class DefaultPsiscoreService implements PsiscoreService{
     @Autowired
     private PsiscoreConfig config;
 
+    @Autowired
+    private ScoreCalculator calculator;
+
     public String getVersion() {
         return config.getVersion();
     }
 
-    public QueryResponse getByQuery(@WebParam(name = "inputData",
-            targetNamespace = "http://psi.hupo.org/mi/psiscore") ResultSet inputData)
+    public QueryResponse getByQuery( ResultSet inputData)
             throws PsiscoreServiceException, NotSupportedTypeException, NotSupportedMethodException {
+
+        EntrySet entrySet = null;
+
+        // if the xml is used
+        try {
+            entrySet = new EntrySetConverter().fromJaxb(inputData.getEntrySet());
+        } catch (ConverterException e) {
+            throw new PsiscoreServiceException("Problem converting from the psi mi 2.5.4 model to the generic one", e);
+        }
+
+        // if the mitab is used
+        PsimiTabReader reader = new PsimiTabReader(false);
+        try {
+            Collection<BinaryInteraction> binaryInteractions = reader.read(inputData.getMitab());
+
+            Tab2Xml tab2xml = new Tab2Xml();
+            entrySet = tab2xml.convert(binaryInteractions);
+        } catch (Exception e) {
+            throw new PsiscoreServiceException("Problem converting from PSI MITAB to EntrySet", e);
+        }
+
+        // TODO handle assynchronous calling to this, and assign a tracking code.
+        calculator.calculateScores(entrySet);
+
+        // TODO return tracking code and whatever
         return null;
     }
 }
