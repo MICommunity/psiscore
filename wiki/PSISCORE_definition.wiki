@@ -1,0 +1,100 @@
+#labels Phase-Design
+#Definition of the methods that are available from a PSISCORE web service
+
+By: Hagen Blankenburg, Jules Kerssemakers, Jens Hanssen, Javier De Las Rivas
+
+=General considerations= 
+  * Scores will be added, that is, existing scores will be preserved.
+    * for MITAB, this means adding the new score to the confidence column
+    * for MIXML, this means adding a new confidence element to the confidenceList within the interaction element.
+  * Scores should be between 0.0 and 1.0 (Other types are allowed, but discouraged for reasons of normalization)
+  * `PsiScoreException` is intended as the parent for the other PsiScore exceptions. It is not recommended to throw directly. In the unrecommended event that it is thrown as a generic catch-all exception, it should at least be accompanied by a descriptive error message.
+
+=Method overview=
+
+==`getSupportedScoringMethods()`==
+
+Returns this servers available scoring algorithms and their respective requirements (parameters)
+
+  * Takes:
+    * Nothing
+  * Returns:
+    * List of AlgorithmDescriptors
+      * identifier (String)
+      * scoringTypeList (controlled vocab term)
+           Some examples/suggestions: (specific terms still open to change)
+             * "structure based": if it takes into account structure data (e.g. PDB files)
+             * "network based": if the overall layout is processed into the score
+      * parameterSpecifierList: (type, ParameterLabel, Value)
+      * score type / range (Controlled vocab. term)
+             * "zero to one"
+             * "zero to infinity"
+  * Exceptions:
+    * PsiScoreException 
+
+
+==`getSupportedDataType()`==
+
+Returns the input data types this server can handle (either XML, TAB, ot both, None doesn't make any sense)
+
+  * Takes
+    * Nothing
+  * Returns
+    * SupportedDataTypeList (CV: MIME/type: “PSIMIXML25” / “PSIMITAB25”)
+  * Exceptions:
+    * PsiScoreException
+
+
+==`submitJob()`==
+Request the server to score the interactions specified in the data section of the request with the algorithms listed.
+
+  * Takes:
+    * AlgorithmSpecifierList: List of:
+      * What algorithm: Algorithm identifier → CV term 
+      * Lists of (parameterLabel,value pairs)
+      * dataTAB (Empty if MIXML is used)
+      * dataXML (Empty if MITAB is used)
+      
+  * Returns:
+    * JobResponse
+      * jobID: Identifier
+      * pollingInterval (Guideline, X seconds, 1 indicates “come back 'now' ”, larger values: try again every X seconds)
+  * Exceptions:
+    * PsiScoreException
+    * InvalidArgumentException
+      * oversized input (large XML/TAB) gives InvalidArgument
+
+==`getJobStatus()`==
+Request the status of the job, Is it retrievable yet?
+
+  * Takes:
+    * jobID
+  * Returns:
+    * jobStatus
+      controlled vocabulary term, one of:
+      * InQueue
+      * Working
+      * Finished
+      * FinishedWithErrors
+      * Expired
+  * Exceptions:
+    * PsiScoreException
+    * InvalidArgumentException
+
+
+==`getJob()`==
+Retrieves the finished job data.
+
+  * Takes:
+    * jobID
+  * Returns:
+    *data + scores (XML or MITAB file)
+    * Report: (list of strings)
+  * Exceptions:
+    * PsiScoreException
+    * InvalidJobStateException --> If the job specified is still in Queue, still running, or already expired from cache
+    * InvalidArgumentException --> if the JobID specified is completely unknown, or otherwise malformed.
+
+ 
+
+
