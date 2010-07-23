@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:xs="http://www.w3.org/2001/XMLSchema"
+             xmlns:pss="http://psi.hupo.org/mi/psiscore"
+             xmlns:mif="http://psi.hupo.org/mi/mif"
+             xmlns:mitab="http://psi.hupo.org/mi/mitab"
+             targetNamespace="http://psi.hupo.org/mi/psiscore">
+
+    <types>
+
+        <xs:schema elementFormDefault="qualified"
+                   xmlns:pss="http://psi.hupo.org/mi/psiscore"
+                   xmlns:mif="http://psi.hupo.org/mi/mif"
+                   xmlns:mitab="http://psi.hupo.org/mi/mitab"
+                   targetNamespace="http://psi.hupo.org/mi/psiscore">
+
+            <xs:import namespace="http://psi.hupo.org/mi/mif"
+                       schemaLocation="http://psidev.sourceforge.net/mi/rel25/src/MIF254.xsd"/>
+
+            <!-- types -->
+
+			<xs:element name="getSupportedScoringMethods" type="pss:getSupportedScoringMethods"/>
+            <xs:element name="getSupportedScoringMethodsResponse" type="pss:getSupportedScoringMethodsResponse"/>
+			
+			<xs:element name="getVersion" type="pss:getVersion"/>
+            <xs:element name="getVersionResponse" type="pss:getVersionResponse"/>
+			
+			<xs:element name="getSupportedReturnTypes" type="pss:getSupportedReturnTypes"/>
+            <xs:element name="getSupportedReturnTypesResponse" type="pss:getSupportedReturnTypesResponse"/>
+			
+			<xs:element name="submitJob" type="pss:submitJob"/>
+            <xs:element name="submitJobResponse" type="pss:submitJobResponse"/>
+			
+			<xs:element name="getJob" type="pss:getJob"/>
+            <xs:element name="getJobResponse" type="pss:getJobResponse"/>
+            
+            <xs:element name="getJobStatus" type="pss:getJobStatus"/>
+            <xs:element name="getJobStatusResponse" type="pss:getJobStatusResponse"/>
+            
+			<xs:element name="getSupportedDbAcs" type="pss:getSupportedDbAcs"/>
+            <xs:element name="getSupportedDbAcsResponse" type="pss:getSupportedDbAcsResponse"/>
+
+            <!-- in/out types -->
+
+			<xs:complexType name="getSupportedScoringMethods">
+                <xs:sequence/>
+            </xs:complexType>
+
+            <xs:complexType name="getSupportedScoringMethodsResponse">
+                <xs:sequence>
+                    <xs:element name="algorithmDescriptor" type="pss:algorithmDescriptor" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+			
+			 <xs:complexType name="submitJob">
+                <xs:sequence>
+                    <xs:element name="algorithmDescriptor" type="pss:algorithmDescriptor" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="inputData" nillable="false" type="pss:resultSet" maxOccurs="1"/>
+					<xs:element name="returnFormat" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+			
+			 <xs:complexType name="submitJobResponse">
+                <xs:sequence>
+                    <xs:element name="jobResponse" type="pss:jobResponse"/>
+                </xs:sequence>
+            </xs:complexType>
+			
+			<xs:complexType name="getJob">
+                <xs:sequence>
+                    <xs:element name="jobId" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+			
+			 <xs:complexType name="getJobResponse">
+                <xs:sequence>
+                    <xs:element name="jobResponse" type="pss:queryResponse"/>
+                </xs:sequence>
+            </xs:complexType>
+            
+            <xs:complexType name="getJobStatus">
+                <xs:sequence>
+                    <xs:element name="jobId" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+			
+			 <xs:complexType name="getJobStatusResponse">
+                <xs:sequence>
+                    <xs:element name="jobStatus" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+			
+
+             <xs:complexType name="getVersion">
+                <xs:sequence/>
+            </xs:complexType>
+
+            <xs:complexType name="getVersionResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="getSupportedReturnTypes">
+                <xs:sequence/>
+            </xs:complexType>
+
+            <xs:complexType name="getSupportedReturnTypesResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="getSupportedDbAcs">
+                <xs:sequence/>
+            </xs:complexType>
+
+            <xs:complexType name="getSupportedDbAcsResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <!-- other types -->
+			
+			<xs:complexType name="jobResponse">
+                <xs:sequence>
+                    <xs:element name="jobId" type="xs:string"/>
+					<xs:element name="pollingInterval" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+			
+
+            
+                <xs:complexType name="psiscoreFault">
+                    <xs:sequence>
+                        <xs:element name="code" type="xs:int"/>
+                        <xs:element name="message" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            
+			
+
+						
+			<xs:complexType name="algorithmDescriptor">
+                <xs:sequence>
+                    <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="algorithmType" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="parameterSpecifier" type="pss:parameterSpecifier" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="requiredDataFields" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="range" type="xs:string"  minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+			
+			<xs:complexType name="parameterSpecifier">
+                <xs:sequence>
+                    <xs:element name="id" type="xs:string"/>
+					<xs:element name="type" type="xs:string"/>
+					<xs:element name="value" type="xs:string" nillable="true"/>
+                </xs:sequence>
+            </xs:complexType>
+			
+            <xs:complexType name="requestInfo">
+                <xs:sequence>
+                    <xs:element name="resultType" type="xs:string"/>
+                    <xs:element default="0" name="firstResult" type="xs:int"/>
+                    <xs:element default="50" name="blockSize" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="dbRef">
+                <xs:sequence>
+                    <xs:element nillable="true" name="dbAc" type="xs:string"/>
+                    <xs:element name="id" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="queryResponse">
+                <xs:sequence>
+                    <xs:element name="resultSet" type="pss:resultSet"/>
+                    <xs:element name="resultInfo" type="pss:resultInfo"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="resultSet">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="entrySet" type="mif:entrySet"/>
+                    <xs:element minOccurs="0" name="mitab" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="resultInfo">
+                <xs:sequence>
+                    <xs:element name="firstResult" type="xs:int"/>
+                    <xs:element name="totalResults" type="xs:int"/>
+                    <xs:element name="resultType" type="xs:string"/>
+                    <xs:element name="blockSize" type="xs:int"/>
+                </xs:sequence>
+
+            </xs:complexType>
+
+            <xs:complexType name="supportedTypes">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="supportedType" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+
+        </xs:schema>
+
+    </types>
+
+    <!-- MESSAGES -->
+	
+	 <message name="getSupportedScoringMethods">
+        <part name="parameters" element="pss:getSupportedScoringMethods"/>
+    </message>
+
+    <message name="getSupportedScoringMethodsResponse">
+        <part name="parameters" element="pss:getSupportedScoringMethodsResponse"/>
+    </message>
+	
+	<message name="submitJob">
+        <part element="pss:submitJob" name="parameters"/>
+    </message>
+	
+	<message name="submitJobResponse">
+        <part element="pss:submitJobResponse" name="submitJobResponse"/>
+    </message>
+	
+	<message name="getJob">
+        <part element="pss:getJob" name="parameters"/>
+    </message>
+	
+	<message name="getJobResponse">
+        <part element="pss:getJobResponse" name="getJobResponse"/>
+    </message>
+    
+    <message name="getJobStatus">
+        <part element="pss:getJobStatus" name="parameters"/>
+    </message>
+	
+	<message name="getJobStatusResponse">
+        <part element="pss:getJobStatusResponse" name="getJobStatusResponse"/>
+    </message>
+
+
+    <message name="InvalidArgumentException">
+        <part type="pss:psiscoreFault" name="InvalidArgumentException"/>
+    </message>
+
+    <message name="PsiscoreException">
+        <part type="pss:psiscoreFault" name="PsiscoreException"/>
+    </message>
+	
+	<message name="JobStillRunningException">
+        <part type="pss:psiscoreFault" name="JobStillRunningException"/>
+    </message>
+
+
+    <message name="getVersion">
+        <part name="parameters" element="pss:getVersion"/>
+    </message>
+    <message name="getVersionResponse">
+        <part name="parameters" element="pss:getVersionResponse"/>
+    </message>
+
+    <message name="getSupportedReturnTypes">
+        <part element="pss:getSupportedReturnTypes" name="parameters"/>
+    </message>
+
+    <message name="getSupportedReturnTypesResponse">
+        <part element="pss:getSupportedReturnTypesResponse" name="parameters"/>
+    </message>
+
+    <message name="getSupportedDbAcs">
+        <part element="pss:getSupportedDbAcs" name="parameters"/>
+    </message>
+
+    <message name="getSupportedDbAcsResponse">
+        <part element="pss:getSupportedDbAcsResponse" name="parameters"/>
+    </message>
+
+
+    <!-- PORT TYPE -->
+
+    <portType name="psiscoreService">
+	
+		<operation name="getSupportedScoringMethods">
+            <input message="pss:getSupportedScoringMethods"/>
+            <output message="pss:getSupportedScoringMethodsResponse"/>
+            <fault message="pss:PsiscoreException" name="PsiscoreException"/>
+        </operation>
+
+		<operation name="getSupportedReturnTypes">
+            <input message="pss:getSupportedReturnTypes"/>
+            <output message="pss:getSupportedReturnTypesResponse"/>
+			<fault message="pss:PsiscoreException" name="PsiscoreException"/>
+        </operation>
+		
+		 <operation name="submitJob">
+            <input message="pss:submitJob" name="submitJob"/>
+            <output message="pss:submitJobResponse" name="submitJobResponse"/>
+            <fault message="pss:InvalidArgumentException" name="InvalidArgumentException"/>
+            <fault message="pss:PsiscoreException" name="PsiscoreException"/>
+        </operation>
+		
+		<operation name="getJob">
+            <input message="pss:getJob" name="getJob"/>
+            <output message="pss:getJobResponse" name="getJobResponse"/>
+            <fault message="pss:PsiscoreException" name="PsiscoreException"/>
+			<fault message="pss:JobStillRunningException" name="JobStillRunningException"/>
+			<fault message="pss:InvalidArgumentException" name="InvalidArgumentException"/>
+        </operation>
+		
+		<operation name="getJobStatus">
+            <input message="pss:getJobStatus" name="getJobStatus"/>
+            <output message="pss:getJobStatusResponse" name="getJobStatusResponse"/>
+            <fault message="pss:PsiscoreException" name="PsiscoreException"/>
+			<fault message="pss:InvalidArgumentException" name="InvalidArgumentException"/>
+        </operation>
+        <operation name="getVersion">
+            <input message="pss:getVersion"/>
+            <output message="pss:getVersionResponse"/>
+			<fault message="pss:PsiscoreException" name="PsiscoreException"/>
+        </operation>
+
+    </portType>
+
+
+    <!-- BINDING -->
+
+    <binding name="psiscoreSoapBinding" type="pss:psiscoreService">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		
+		 <operation name="getSupportedScoringMethods">
+            <soap:operation soapAction="getSupportedScoringMethods" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="PsiscoreException">
+                <soap:fault name="PsiscoreException" use="literal"/>
+            </fault>
+        </operation>
+		
+		 <operation name="getSupportedReturnTypes">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+			 <fault name="PsiscoreException">
+                <soap:fault name="PsiscoreException" use="literal"/>
+            </fault>
+        </operation>
+
+		<operation name="submitJob">
+            <soap:operation soapAction="submitJob" style="document"/>
+            <input name="submitJob">
+                <soap:body use="literal"/>
+            </input>
+            <output name="submitJobResponse">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="InvalidArgumentException">
+                <soap:fault name="InvalidArgumentException" use="literal"/>
+            </fault>
+            <fault name="PsiscoreException">
+                <soap:fault name="PsiscoreException" use="literal"/>
+            </fault>
+        </operation>
+
+		
+		<operation name="getJob">
+            <soap:operation soapAction="getJob" style="document"/>
+            <input name="getJob">
+                <soap:body use="literal"/>
+            </input>
+            <output name="getJobResponse">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="PsiscoreException">
+                <soap:fault name="PsiscoreException" use="literal"/>
+            </fault>
+			 <fault name="InvalidArgumentException">
+                <soap:fault name="InvalidArgumentException" use="literal"/>
+            </fault>
+			 <fault name="JobStillRunningException">
+                <soap:fault name="JobStillRunningException" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="getJobStatus">
+            <soap:operation soapAction="getJobStatus" style="document"/>
+            <input name="getJobStatus">
+                <soap:body use="literal"/>
+            </input>
+            <output name="getJobStatusResponse">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="PsiscoreException">
+                <soap:fault name="PsiscoreException" use="literal"/>
+            </fault>
+			 <fault name="InvalidArgumentException">
+                <soap:fault name="InvalidArgumentException" use="literal"/>
+            </fault>
+        </operation>
+
+
+        <operation name="getVersion">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+			<fault name="PsiscoreException">
+                <soap:fault name="PsiscoreException" use="literal"/>
+            </fault>
+        </operation>
+
+    </binding>
+
+    <!-- SERVICE -->
+    <service name="psiscoreService">
+        <port name="psiscore" binding="pss:psiscoreSoapBinding">
+            <soap:address location="http://psi.hupo.org/mi/services/psiscore"/>
+        </port>
+    </service>
+</definitions>
