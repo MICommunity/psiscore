@@ -1,27 +1,21 @@
 #labels Phase-Design
 #Definition of the methods that are available from a PSISCORE web service
 
-By: Hagen Blankenburg, Jules Kerssemakers, Jens Hanssen, Javier De Las Rivas
-
-=General considerations= 
-  * Scores will be added, that is, existing scores will be preserved.
-    * for MITAB, this means adding the new score to the confidence column
-    * for MIXML, this means adding a new confidence element to the confidenceList within the interaction element.
-  * Scores should be between 0.0 and 1.0 (Other types are allowed, but discouraged for reasons of normalization)
-  * `PsiScoreException` is intended as the parent for the other PsiScore exceptions. It is not recommended to throw directly. In the unrecommended event that it is thrown as a generic catch-all exception, it should at least be accompanied by a descriptive error message.
+_By: Hagen Blankenburg, Jules Kerssemakers, Jens Hanssen, Javier De Las Rivas_ 
 
 =Method overview=
+Short description of the methods provided by a PSISCORE service
 
 ==`getSupportedScoringMethods()`==
 
-Returns this servers available scoring algorithms and their respective requirements (parameters)
+Returns a servers available scoring algorithms and their respective requirements (parameters)
 
   * Takes:
     * Nothing
   * Returns:
     * List of AlgorithmDescriptors
       * identifier (String)
-      * scoringTypeList (controlled vocab term)
+      * scoringTypeList (controlled vocabu term)
            Some examples/suggestions: (specific terms still open to change)
              * "structure based": if it takes into account structure data (e.g. PDB files)
              * "network based": if the overall layout is processed into the score
@@ -95,6 +89,11 @@ Retrieves the finished job data.
     * InvalidJobStateException --> If the job specified is still in Queue, still running, or already expired from cache
     * InvalidArgumentException --> if the JobID specified is completely unknown, or otherwise malformed.
 
+=General considerations= 
+  * Scores will be added, that is, existing scores will be preserved.
+    * for MITAB, this means adding the new score to the confidence column
+    * for MIXML, this means adding a new confidence element to the confidenceList within the interaction element.
+  * Scores should be between 0.0 and 1.0 (Other types are allowed, but discouraged for reasons of normalization)
+  * `PsiScoreException` is intended as the parent for the other PsiScore exceptions. It is not recommended to throw directly. In the unrecommended event that it is thrown as a generic catch-all exception, it should at least be accompanied by a descriptive error message.
+
  
-
-
