@@ -1,5 +1,5 @@
+#summary Definition of the methods that are available from a PSISCORE web service
 #labels Phase-Design
-#Definition of the methods that are available from a PSISCORE web service
 
 _By: Hagen Blankenburg, Jules Kerssemakers, Jens Hanssen, Javier De Las Rivas_ 
 
