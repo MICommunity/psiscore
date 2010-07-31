@@ -1,0 +1,12 @@
+#summary This document describes how to compile your own PSISCORE server from the source code provided.
+#labels Phase-Deploy,Phase-Implementation
+
+=PSISCORE web service=
+The source code of the PSISCORE web service reference implementation can be found in the download section of the Google code page. PSISCORE relies on Maven for managing Java dependencies and project setting. Therefore, all you need to do in order to build your own, personal PSISCORE server from the source code provided is to start the Maven build process.
+
+=Building a new PSISCORE service=
+
+Currently being written. Will contain information on how to start maven, and make the resulting archive accessible via a web server. 
+
+=Implementing a new scoring routine=
+Currently being written. Will contain details on the reference implementation and how to quickly develop you own scoring routine.
