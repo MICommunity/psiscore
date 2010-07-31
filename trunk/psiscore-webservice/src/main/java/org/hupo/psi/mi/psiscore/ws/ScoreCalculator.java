@@ -15,16 +15,88 @@
  */
 package org.hupo.psi.mi.psiscore.ws;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import psidev.psi.mi.xml.model.EntrySet;
 
+import org.hupo.psi.mi.psiscore.AlgorithmDescriptor;
+import org.hupo.psi.mi.psiscore.PsiscoreException;
+
+
+
 /**
- * TODO write description of the class.
+ * Abstract class describing a scoring calculator. Actual
+ * scoring calculators only have to overwrite the scoring method
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
+ * @author Hagen Blankenburg
  * @version $Id$
  */
-public interface ScoreCalculator {
-
-    EntrySet calculateScores(EntrySet entrySet);
+public abstract class ScoreCalculator extends Thread{
+	EntrySet entrySet = null;
+	ScoringParameters scoringParameters = null;
+	Set<ScoringListener> scoringListeners = null;
+	
+	/**
+	 * Default constructor
+	 */
+    public ScoreCalculator(){
+    	scoringListeners = new HashSet<ScoringListener>();
+    }
+	
+    /**
+     * Constructor 
+     * @param params
+     */
+    public ScoreCalculator(ScoringParameters params){
+    	if (params != null){
+    		this.entrySet = params.getEntrySet();
+    		this.scoringParameters = params;
+    	}
+    	this.scoringListeners = new HashSet<ScoringListener>();
+    }
+    
+    	
+    /**
+     * Calculate the scores for each entry in the entryset. 
+     * @param entrySet the input
+     * @return the same entry set plus scores
+     * @throws PsiscoreException 
+     */
+    abstract EntrySet calculateScores(EntrySet entrySet) throws PsiscoreException;
+    
+    /**
+     * Return the list of scoring algorithm descriptions a scoring calculator can calculate
+     * @return
+     * @throws PsiscoreException
+     */
+    abstract List<AlgorithmDescriptor> getSupportedScoringMethods() throws PsiscoreException;
+    
+    
+    
+    /**
+     * Add a listener
+     * @param listener
+     */
+    public void addScoringListener (ScoringListener listener){
+    	
+    	if (this.scoringListeners == null){
+    		this.scoringListeners = new HashSet<ScoringListener>();
+    	}
+    	this.scoringListeners.add(listener);
+    }
+    
+    /**
+     * Set the scoring parameters
+     * @param parameters
+     */
+    public void setScoringParameters (ScoringParameters parameters){
+       	this.scoringParameters = parameters;
+       	if (this.entrySet == null){
+       		this.entrySet = scoringParameters.getEntrySet();
+      	}
+    }
 
 }
