@@ -2,11 +2,20 @@
 #labels Phase-Deploy,Phase-Implementation
 
 =PSISCORE web service=
-The source code of the PSISCORE web service reference implementation can be found in the download section of the Google code page. PSISCORE relies on Maven for managing Java dependencies and project setting. Therefore, all you need to do in order to build your own, personal PSISCORE server from the source code provided is to start the Maven build process.
+The source code of the PSISCORE web service reference implementation can be found in the download section of the Google code page. PSISCORE relies on [http://maven.apache.org/ Maven] for managing Java dependencies and project setting. Therefore, all you need to do in order to build your own, personal PSISCORE server from the source code provided is to start the Maven build process.
 
 =Building a new PSISCORE service=
+An important prerequisite for building a PSISCORE server is that [http://maven.apache.org/ Maven] is installed at your local machine. The software along with extensive documentation can be found on the [http://maven.apache.org/ Maven homepage]. Once you installed maven, all you need to do in order to build a new PSISCORE server from the source code provided in the reference implementation is to issue the following command in the same directory where the {{{pom.xml}}} is located: 
 
-Currently being written. Will contain information on how to start maven, and make the resulting archive accessible via a web server. 
+{{{mvn clean install}}}
+
+This command will retrieve all Java dependencies required by PSISCORE from the internet, compile the PSISCORE server code and package it in a web archive (.war file) to use it in a web server.  
+
+
+===Testing your PSISCORE server===
+You can very easily test your new PSISCORE server by using the [http://jetty.codehaus.org/jetty/ Jetty] web server that is already configured in the Maven script provided with the PSISCORE reference implementation. In order to start Jetty, just issue the following command in the same directory where the pom.xml file resides:
+
+{{{mvn clean install jetty:run}}}
 
 =Implementing a new scoring routine=
 Currently being written. Will contain details on the reference implementation and how to quickly develop you own scoring routine.
