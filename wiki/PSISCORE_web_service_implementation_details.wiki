@@ -1,0 +1,9 @@
+#summary Details for the implementation of a new score calculator
+#labels Phase-Implementation
+
+=Abstract class {{{ScoreCalculator}}}=
+A {{{ScoreCalculator}}} is the abstract super class for all calculators, defining the basic methods for every scoring calculator. The PSISCORE reference implementation is based on Java {{{Thread}}}s, therefore a {{{run}}} method has to be implemented and listeners are used to handle the outcome of a thread. 
+
+The two important methods of a {{{ScoreCalculator}}} are {{{calculateScores}}} and {{{getSupportedScoringMethods}}}. The former takes an {{{EntrySet}}} (the object representation of the PSI-MI input data) and returns the same {{{EntrySet}}} plus the calculated scores. The latter returns a list of {{{AlgorithmDescriptor}}}s, constructs that describe each scoring algorithms offered by a server. 
+
+
