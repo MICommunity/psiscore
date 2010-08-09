@@ -1,9 +1,14 @@
 #summary Details for the implementation of a new score calculator
 #labels Phase-Implementation
 
-=Abstract class {{{ScoreCalculator}}}=
-A {{{ScoreCalculator}}} is the abstract super class for all calculators, defining the basic methods for every scoring calculator. The PSISCORE reference implementation is based on Java {{{Thread}}}s, therefore a {{{run}}} method has to be implemented and listeners are used to handle the outcome of a thread. 
+In the following you will find all the information required to implement your own scoring server with the help of the reference implementation. With the use of inheritance, we try to hide as much implementation from you as possible. In order to get a working calculator, all you need to do is implement two methods, {{{getScores}}} and {{{getSupportedScoringMethods}}}. But let's start by explaining the implementation of the reference server implementation. 
 
-The two important methods of a {{{ScoreCalculator}}} are {{{calculateScores}}} and {{{getSupportedScoringMethods}}}. The former takes an {{{EntrySet}}} (the object representation of the PSI-MI input data) and returns the same {{{EntrySet}}} plus the calculated scores. The latter returns a list of {{{AlgorithmDescriptor}}}s, constructs that describe each scoring algorithms offered by a server. 
+={{{ScoreCalculator}}}=
+A {{{ScoreCalculator}}} is the abstract super class for all calculators, defining the basic methods every scoring calculator has to have. The PSISCORE reference implementation is based on Java {{{Thread}}}s, therefore a {{{run}}} method has to be implemented and listeners are used to handle the outcome of the thread. 
 
+The two crucial methods of the {{{ScoreCalculator}}} are {{{calculateScores}}} and {{{getSupportedScoringMethods}}}. The former takes an {{{EntrySet}}} (the object representation of the PSI-MI input data) and returns the same {{{EntrySet}}} plus the calculated scores. The latter returns a list of {{{AlgorithmDescriptor}}}s, constructs that describe each scoring algorithms offered by a server. 
 
+*You do not need to make any changes to the {{{ScoreCalculator}}} class.*
+
+={{{AbstractScoreCalculator}}}= 
+The {{{AbstractScoreCalculator}}} (not to be mistaken with the {{{abstract}}} {{{ScoreCalculator}}} described above) extends the {{{ScoreCalculator}}} interface. The {{{AbstractScoreCalculator}}} defines the {{{run}}} method every Java thread has to implement. In addition, it provides a basic listener interface that handles the outcome of a scoring thread.  
