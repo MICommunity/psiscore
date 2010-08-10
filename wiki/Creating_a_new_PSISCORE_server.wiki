@@ -26,7 +26,4 @@ If you then go to your browser (same comments to the URL as above), you can agai
 
 
 =Implementing a new scoring routine=
-The reference implementation only provides two very simple scoring calculators to illustrate the general usage. Both exemplary calculators read confidence scores for certain binary interactions from flat text files. These calculators should only illustrate the general architecture of the reference implementation. In order to provide your own scoring method, you need to implement a new {{{ScoreCalculator}}}. This calculator could, depending on your scoring method and your general server settings, retrieve precalculated values form an in-house database or it could start external programs that calculate the scores on-the-fly.
-
-=={{{The getScores()}}} method==
-Description on how to implement a new scoring routine here is currently being written. 
+Please see the [http://code.google.com/p/psiscore/wiki/PSISCORE_web_service_implementation_details implementation details] for detailed instructions, how to adapt the source code to your needs.
