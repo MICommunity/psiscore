@@ -1,7 +1,7 @@
 #summary Details for the implementation of a new score calculator
 #labels Phase-Implementation
 
-In the following you will find all the information required to implement your own scoring server with the help of the reference implementation. If you want more details on how to compile the whole server package and how to actually deploy the server, you might want to read [Creating_a_new_PSISCORE_server]. 
+In the following you will find all the information required to implement your own scoring server with the help of the reference implementation. If you want more details on how to compile the whole server package and how to actually deploy the server, you might want to read [Creating_a_new_PSISCORE_server this document]. 
 By using inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working calculator is to create a class providing two methods, {{{getScores}}} and {{{getSupportedScoringMethods}}}. But let's start by explaining the implementation details of the reference server implementation. 
 
 ={{{ScoreCalculator}}}=
