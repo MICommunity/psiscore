@@ -26,4 +26,4 @@ If you then go to your browser (same comments to the URL as above), you can agai
 
 
 =Implementing a new scoring routine=
-Please see the [http://code.google.com/p/psiscore/wiki/PSISCORE_web_service_implementation_details implementation details] for detailed instructions, how to adapt the source code to your needs.
+Please see the [PSISCORE_web_service_implementation_details implementation details] for detailed instructions, how to adapt the source code to your needs.
