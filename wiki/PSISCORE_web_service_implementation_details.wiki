@@ -1,21 +1,22 @@
 #summary Details for the implementation of a new score calculator
 #labels Phase-Implementation
 
-In the following you will find all the information required to implement your own scoring server with the help of the reference implementation. If you want more details on how to compile the whole server package and how to actually deploy the server, you might want to read [Creating_a_new_PSISCORE_server this document]. 
-By using inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working calculator is to create a class providing two methods, {{{getScores}}} and {{{getSupportedScoringMethods}}}. But let's start by explaining the implementation details of the reference server implementation. 
+In the following you will find all the information required to implement your own scoring server with the help of the reference implementation. If you want more details on how to compile the server and how to deploy it, you might want to read [Creating_a_new_PSISCORE_server this document]. 
+By using Java inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working calculator is to create a class that implements two methods, `getScores` and `getSupportedScoringMethods`. But more on this later, lets start by explaining the general implementation of the PSISCORE reference server implementation. 
 
-={{{ScoreCalculator}}}=
-A {{{ScoreCalculator}}} is the abstract super class for all calculators, defining the basic methods every scoring calculator has to have. The PSISCORE reference implementation is based on Java {{{Thread}}}s, therefore a {{{run}}} method has to be implemented and listeners are used to handle the outcome of the thread. 
+==`ScoreCalculator`==
+A `ScoreCalculator` is the abstract super class for all calculators, defining the basic methods every scoring calculator has to have (i.e. an interface). The PSISCORE reference implementation is based on Java `Thread`s. That is, a thread will be started for each scoring job and the outcome of this thread will be handled by listeners.  
 
-The two crucial methods of the {{{ScoreCalculator}}} are {{{calculateScores}}} and {{{getSupportedScoringMethods}}}. The former takes an {{{EntrySet}}} (the object representation of the PSI-MI input data) and returns the same {{{EntrySet}}} plus the calculated scores. The latter returns a list of {{{AlgorithmDescriptor}}}s, constructs that describe each scoring algorithms offered by a server. 
+The two crucial methods defined by the `ScoreCalculator` are `calculateScores` and `getSupportedScoringMethods`. The former takes an `EntrySet` (the object representation of the PSI-MI input data) and returns the same `EntrySet` plus the potential confidence scores calculated. The latter returns a list of `AlgorithmDescriptor`s, constructs that describe each scoring algorithms offered by a server. 
 
-*You do not need to make any changes to the {{{ScoreCalculator}}} class.*
+In summary: you do not need to make any changes to the `ScoreCalculator` class.*
 
-={{{AbstractScoreCalculator}}}= 
-The {{{AbstractScoreCalculator}}} (not to be mistaken with the {{{abstract}}} {{{ScoreCalculator}}} described above) extends the {{{ScoreCalculator}}} interface. The {{{AbstractScoreCalculator}}} defines the {{{run}}} method every Java thread has to implement. In addition, it provides a basic listener interface that handles the outcome of a scoring thread.  
+==`AbstractScoreCalculator`== 
+The `AbstractScoreCalculator` extends the `ScoreCalculator` interface. The `AbstractScoreCalculator` implements the `run` method that every Java `Thread` has to provide. This method calls the `calculateScores` method that is responsible for scoring. `calculateScores` will iterate through all interactions in the user input data (i.e. the `EntrySet`) and send each interaction to the `getScores` method that does the actual calculation. 'getScores' is an abstract method, which means that it has to be defined by a class that inherits from the `AbstractScoreCalculator`. `AbstractScoreCalculator` also provides a basic listener interface that handles the outcome of a scoring thread. 
 
-
+ 
+==`ExampleScoreCalculator`==
 The reference implementation only provides two very simple scoring calculators to illustrate the general usage. Both exemplary calculators read confidence scores for certain binary interactions from flat text files. These calculators should only illustrate the general architecture of the reference implementation. In order to provide your own scoring method, you need to implement a new {{{ScoreCalculator}}}. This calculator could, depending on your scoring method and your general server settings, retrieve precalculated values form an in-house database or it could start external programs that calculate the scores on-the-fly.
 
-=={{{The getScores()}}} method==
+===`getScores()`method===
 Description on how to implement a new scoring routine here is currently being written. 
