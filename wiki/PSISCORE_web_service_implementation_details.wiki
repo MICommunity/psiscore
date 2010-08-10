@@ -1,15 +1,13 @@
 #summary Details for the implementation of a new score calculator
 #labels Phase-Implementation
 
-In the following you will find all the information required to implement your own scoring server with the help of the reference implementation. If you want more details on how to compile the server and how to deploy it, you might want to read [Creating_a_new_PSISCORE_server this document]. 
-By using Java inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working calculator is to create a class that implements two methods, `getScores` and `getSupportedScoringMethods`. But more on this later, lets start by explaining the general implementation of the PSISCORE reference server implementation. 
+In the following you will find all the information required to implement your own scoring class with the help of the reference implementation. If you want more details on how to compile the server and how to deploy it, you might want to read [Creating_a_new_PSISCORE_server this document]. 
+By using Java inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working calculator is to create a class that implements the two methods `getScores` and `getSupportedScoringMethods`. But more on this later, lets start by explaining the general implementation of the PSISCORE reference server implementation. 
 
 ==`ScoreCalculator`==
-A `ScoreCalculator` is the abstract super class for all calculators, defining the basic methods every scoring calculator has to have (i.e. an interface). The PSISCORE reference implementation is based on Java `Thread`s. That is, a thread will be started for each scoring job and the outcome of this thread will be handled by listeners.  
-
-The two crucial methods defined by the `ScoreCalculator` are `calculateScores` and `getSupportedScoringMethods`. The former takes an `EntrySet` (the object representation of the PSI-MI input data) and returns the same `EntrySet` plus the potential confidence scores calculated. The latter returns a list of `AlgorithmDescriptor`s, constructs that describe each scoring algorithms offered by a server. 
-
-In summary: you do not need to make any changes to the `ScoreCalculator` class.*
+A `ScoreCalculator` is the abstract interface for all calculators, defining the basic methods every scoring calculator has to have. The PSISCORE reference implementation is based on Java threading, therefore, `ScoreCalculator` extends the `Thread` class. Each request will be handled by a `ScoreCalculator` thread and the outcome of this thread will be handled by listeners.  
+The two important methods defined by the `ScoreCalculator` are `calculateScores` and `getSupportedScoringMethods`. The former takes an `EntrySet` (the object representation of the PSI-MI input data) and returns the same `EntrySet` plus the potential confidence scores calculated. The latter returns a list of `AlgorithmDescriptor`s, constructs that describe each scoring algorithms offered by a server. 
+If you want to implement your own scoring class, you do not need to make any changes to the `ScoreCalculator`.
 
 ==`AbstractScoreCalculator`== 
 The `AbstractScoreCalculator` extends the `ScoreCalculator` interface. The `AbstractScoreCalculator` implements the `run` method that every Java `Thread` has to provide. This method calls the `calculateScores` method that is responsible for scoring. `calculateScores` will iterate through all interactions in the user input data (i.e. the `EntrySet`) and send each interaction to the `getScores` method that does the actual calculation. 'getScores' is an abstract method, which means that it has to be defined by a class that inherits from the `AbstractScoreCalculator`. `AbstractScoreCalculator` also provides a basic listener interface that handles the outcome of a scoring thread. 
