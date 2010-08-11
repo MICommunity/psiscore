@@ -15,7 +15,7 @@ This section contains a description of the minimal steps required to implement a
   # implement a class with two methods described below and 
   # tell your server to use this scoring class
 
-==The two mandatory scoring methods==
+==1) The two mandatory scoring methods==
 
 ===`getScores` method===
 This method is the place where the scoring of individual interactions is performed. The input to the method is an `Interaction` object that contains references to all its participating interactors, their database identifiers, etc. If your method provides confidence scores that are precalculated, then you would only need to look up the scores in your database and add them as new `Confidence` objects to the `Interaction` like in the following:
@@ -54,6 +54,7 @@ return descriptorList;
 ===Your scoring calculator class===
 The two methods `getScores` and `getSupportedScoringMethods` have to be located in a Java class that extends the `AbstractScoreCalculator` (described in more details below). You can see two working exemplary scoring calculators in the reference implementation [http://code.google.com/p/psiscore/source/checkout source code]. Both calculators read confidence scores for certain binary interactions from flat text files. These calculators should only illustrate the general architecture of the reference implementation.
 
+==2) Registering your scoring class==
 Once you finished the implementation of your scoring class, you only need to register it with the `DefaultPsiscoreService` that manages all score calculators.
 
 The code snippet that contains the calculator listing can be seen below:
@@ -62,7 +63,7 @@ private String[] calculatorClasses = {"org.hupo.psi.mi.psiscore.ws.ExampleScoreC
     		"org.hupo.psi.mi.psiscore.ws.YetAnotherExampleScoreCalculator"};
 }}}
 
-In the example above, the scoring server provides two calculator classes. If you want to add or remove calculators, your do so by simply changing the list above.
+In this example, the scoring server provides two calculator classes. If you want to add or remove certain calculators, you do so by simply changing the list above. By careful to use the correct combination of package (e.g. org.hupo.psi.mi.psiscore.ws.) and class name (ExampleScoreCalculator) as your calculator can otherwise not be loaded. 
 
 ----
 
