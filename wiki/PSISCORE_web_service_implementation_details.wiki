@@ -11,7 +11,7 @@ If you just want to develop a PSISCORE server class without knowing the stuff ru
 
 =Quick start=
 
-===`getScores()`===
+===`getScores`===
 This method is the place where the scoring of individual interactions is performed. The input to the method is an `Interaction` object that contains references to all its participating interactors, their database identifiers, etc. If your method provides confidence scores that are precalculated, then you would only need to look up the scores in your database and add them as new `Confidence` objects to the `Interaction` like in the following:
 
 {{{
@@ -30,7 +30,7 @@ confidences.add(confidence);
 The method will return the same interaction object it received as input, however, now with the added confidences.
 
 
-===`getSupportedScoringMethods()===
+===`getSupportedScoringMethods`===
 This method tells PSISCORE clients and the PSISCORE registry, what scoring algorithms your server is providing. Users can use this list to only select certain scoring algorithms, if your server provides more than one.
 A very simple, hard-coded, example for this method is listed below:
 
