@@ -92,3 +92,9 @@ while (it.hasNext()){
 }}}
 The `getScores` method of the `AbstractScoreCalculator` is an abstract method, which means that it has to be defined by a class that implements the `AbstractScoreCalculator`. 
 If your scoring routine only requires data from the particular interaction that is to be scored (e.g. the UniProtKB identifiers of the participating interactors), you only need to implement the `getScores` method (for more details on this, see the text above). If, however, you also require data from other parts of the input file (e.g. the experimental parameters provided in an PSI-MI XML file), you will need to make changes to the `calculateScores` method by overriding it in your particular score calculator. 
+
+==YourScoreCalculator==
+The last element in the score calculator inheritance line is your particular score calculator that will need to extend the `AbstractScoreCalculator`. See the above *Quick start* section for details on the methods in this class.
+
+==`DefaultPsiscoreService`==
+The `DefaultPsiscoreService` is the central class that manages all score calculators and handles user requests and responses.  
