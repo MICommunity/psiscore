@@ -15,7 +15,9 @@ This section contains a description of the minimal steps required to implement a
   # implement a class with two methods described below and 
   # tell your server to use this scoring class
 
-===`getScores`===
+==The two mandatory scoring methods==
+
+===`getScores` method===
 This method is the place where the scoring of individual interactions is performed. The input to the method is an `Interaction` object that contains references to all its participating interactors, their database identifiers, etc. If your method provides confidence scores that are precalculated, then you would only need to look up the scores in your database and add them as new `Confidence` objects to the `Interaction` like in the following:
 
 {{{
@@ -33,8 +35,7 @@ confidences.add(confidence);
 
 The method will return the same interaction object it received as input, however, now with the added confidences.
 
-
-===`getSupportedScoringMethods`===
+===`getSupportedScoringMethods` method===
 This method tells PSISCORE clients and the PSISCORE registry, what scoring algorithms your server is providing. Users can use this list to only select certain scoring algorithms, if your server provides more than one.
 A very simple, hard-coded, example for this method is listed below:
 
@@ -50,12 +51,14 @@ descriptorList.add(descriptor);
 return descriptorList;
 }}}
 
+===Your scoring calculator class===
+The two methods `getScores` and `getSupportedScoringMethods` have to be located in a Java class that extends the `AbstractScoreCalculator` (described in more details below). You can see two working exemplary scoring calculators in the reference implementation [http://code.google.com/p/psiscore/source/checkout source code]. Both calculators read confidence scores for certain binary interactions from flat text files. These calculators should only illustrate the general architecture of the reference implementation.
 
 ----
 
 =All the details=
 
-This section contains information on the class structure of the PSISCORE server reference implementation. The information found here might be useful if you want to change the reference implementation, for instance, for using specific caching or threading techniques. 
+This section contains more information on the class structure of the PSISCORE server reference implementation. The information found here might be useful if you want to change the reference implementation, for instance, for using specific caching or threading techniques. 
 
 ==`ScoreCalculator`==
 A `ScoreCalculator` is the abstract interface for all calculators, defining the basic methods every scoring calculator has to have. The PSISCORE reference implementation is based on Java threading, therefore, `ScoreCalculator` extends the `Thread` class. Each request will be handled by a `ScoreCalculator` thread and the outcome of this thread will be handled by listeners.  
@@ -66,4 +69,3 @@ If you want to implement your own scoring class, you do not need to make any cha
 The `AbstractScoreCalculator` extends the `ScoreCalculator` interface. The `AbstractScoreCalculator` implements the `run` method that every Java `Thread` has to provide. This method calls the `calculateScores` method that is responsible for scoring. `calculateScores` will iterate through all interactions in the user input data (i.e. the `EntrySet`) and send each interaction to the `getScores` method that does the actual calculation. 'getScores' is an abstract method, which means that it has to be defined by a class that inherits from the `AbstractScoreCalculator`. `AbstractScoreCalculator` also provides a basic listener interface that handles the outcome of a scoring thread. 
  
 ==`ExampleScoreCalculator`==
-The reference implementation only provides two very simple scoring calculators to illustrate the general usage. Both exemplary calculators read confidence scores for certain binary interactions from flat text files. These calculators should only illustrate the general architecture of the reference implementation. In order to provide your own scoring method, you need to implement a new {{{ScoreCalculator}}}. This calculator could, depending on your scoring method and your general server settings, retrieve precalculated values form an in-house database or it could start external programs that calculate the scores on-the-fly.
