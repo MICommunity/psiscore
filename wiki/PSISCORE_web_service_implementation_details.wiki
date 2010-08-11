@@ -2,8 +2,11 @@
 #labels Phase-Implementation
 
 In the following you will find all the information required to implement your own scoring class with the help of the reference implementation. If you want more details on how to compile the server and how to deploy it, you might want to read [Creating_a_new_PSISCORE_server this document]. 
-By using Java inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working calculator is to create a class that implements the two methods. 
-If you just want to quickly develop a PSISCORE server class without knowing the stuff runnign in the background, read the *Quick start*. If you want to dig deeper and might want to change other implementation aspects, you can have a look at *All the details*.
+By using Java inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working calculator is to create a class that implements two specific methods, one that does the scoring, and one that tells PSISCORE clients what sort of scoring you offer. 
+
+If you just want to develop a PSISCORE server class without knowing the stuff running in the background, read the *Quick start* below. If you are interested in more implementation details, you can dig deeper in *All the details*.
+
+----
 
 =Quick start=
 
