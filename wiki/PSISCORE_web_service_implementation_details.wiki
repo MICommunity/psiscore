@@ -78,5 +78,3 @@ If you want to implement your own scoring class, you do not need to make any cha
 
 ==`AbstractScoreCalculator`== 
 The `AbstractScoreCalculator` extends the `ScoreCalculator` interface. The `AbstractScoreCalculator` implements the `run` method that every Java `Thread` has to provide. This method calls the `calculateScores` method that is responsible for scoring. `calculateScores` will iterate through all interactions in the user input data (i.e. the `EntrySet`) and send each interaction to the `getScores` method that does the actual calculation. 'getScores' is an abstract method, which means that it has to be defined by a class that inherits from the `AbstractScoreCalculator`. `AbstractScoreCalculator` also provides a basic listener interface that handles the outcome of a scoring thread. 
- 
-==`ExampleScoreCalculator`==
