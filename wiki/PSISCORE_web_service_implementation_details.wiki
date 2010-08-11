@@ -7,7 +7,7 @@ If you just want to quickly develop a PSISCORE server class without knowing the 
 
 =Quick start=
 
-Text on its way.
+Text on its way. [PSISCORE_web_service_implementation_details test]
 
 =All the details=
 
