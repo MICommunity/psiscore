@@ -1,4 +1,4 @@
-#summary This document describes how to compile and set up your own PSISCORE server using the reference implementation
+#summary How to compile and set up your own PSISCORE server using the reference implementation
 #labels Phase-Deploy,Phase-Implementation
 
 =PSISCORE web service reference implementation=
