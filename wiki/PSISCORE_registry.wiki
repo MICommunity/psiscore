@@ -1,10 +1,10 @@
 #summary Registry of available PSISCORE servers
 #labels Phase-Deploy,Phase-Support
+
 = Introduction =
+The PSISCORE registry maintains a list of all available scoring servers and the scoring routines they provide. This enables new PSISCORE server providers to make their service available to all client users simply by registering it with the registry.  
 
-The PSISCORE registry maintains a list of all available scoring servers. This enables new PSISCORE server providers to make their service available to all client user simply by registering it with the registry. 
-
-Currently, a registry similar to the [http://code.google.com/p/psicquic/wiki/Registry PSICQUIC registry] is being developed. As long as this service is not available, the list of servers will be manually maintained. In order to add a new scoring server, PSISCORE service providers only need to contact and we will update the registry instantly.
+Currently, a powerful registry similar to the [http://www.dasregistry.org/ DAS registry] or the [http://code.google.com/p/psicquic/wiki/Registry PSICQUIC registry] is being developed. As long as this service is not publicaly available, the list of servers will be manually maintained. 
 
 = PSISCORE servers currently available =
   # http://psiscore.bioinf.mpi-inf.mpg.de/psiscorews/webservices/psiscore
