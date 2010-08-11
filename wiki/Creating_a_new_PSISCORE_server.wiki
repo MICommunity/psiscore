@@ -2,7 +2,7 @@
 #labels Phase-Deploy,Phase-Implementation
 
 =PSISCORE web service reference implementation=
-The source code of the PSISCORE web service reference implementation can be found in the [http://code.google.com/p/psiscore/downloads/list download] or the [http://code.google.com/p/psiscore/source/checkout source] section of the PSISCORE project site. Please note that you will need to do some changes to the server reference implementation before you can deploy it. Please have a look at [PSISCORE_web_service_implementation_details this section] to see, what you need do. 
+The source code of the PSISCORE web service reference implementation can be found in the [http://code.google.com/p/psiscore/downloads/list download] or the [http://code.google.com/p/psiscore/source/checkout source] section of the PSISCORE project site. Please note that you will need to do some small changes to the server reference implementation before you can deploy it at your place. Please have a look at [PSISCORE_web_service_implementation_details this document] to see the steps required.
 
 ==Building a new PSISCORE service==
 PSISCORE relies on [http://maven.apache.org/ Apache Maven] for managing Java dependencies and project settings. Therefore, all you need to do in order to build your own PSISCORE server from the source code provided is to start the Maven build process. If you do not have a local installation of Maven, you can get the software and extensive documentation on how to install it on the [http://maven.apache.org/ Maven homepage].
@@ -26,6 +26,5 @@ An even easier way, especially for testing your PSISCORE service, is to use the 
 
 If you then go to your browser (same comments to the URL as above), you can again see the aforementioned test page and the web service description of your PSISCORE service. 
 
-
 =Implementing a new scoring routine=
-Before you will be able to serve your confidence scores, you will need to write a scoring routine that can access your data. Please see the [PSISCORE_web_service_implementation_details implementation details] for detailed instructions, how to adapt the source code of the reference implementation to your needs.
+Before you will be able to serve your confidence scores, you will need to write a score calculator that can access your data. Please see the [PSISCORE_web_service_implementation_details implementation details] for detailed instructions, how to adapt the source code of the reference implementation to your needs.
