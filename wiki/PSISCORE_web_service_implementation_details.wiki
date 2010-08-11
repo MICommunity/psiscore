@@ -77,8 +77,8 @@ The two important methods defined by the `ScoreCalculator` are `calculateScores`
 If you want to implement your own scoring class, you do not need to make any changes to the `ScoreCalculator`.
 
 ==`AbstractScoreCalculator`== 
-The `AbstractScoreCalculator` extends the `ScoreCalculator` interface. The `AbstractScoreCalculator` implements the `run` method that every Java `Thread` has to provide. This method calls the `calculateScores` method that is responsible for scoring. 
-`calculateScores` will iterate through all interactions in the user input data (i.e. the `EntrySet`) and send each interaction to the `getScores` method that does the actual calculation. Here is a code snippet:
+The `AbstractScoreCalculator` extends the `ScoreCalculator` interface. The `AbstractScoreCalculator` implements the `run` method that is required for every Java `Thread`. This method calls the `calculateScores` method that is responsible for scoring. 
+In the code snippet below, `calculateScores` will iterate through all interactions in the user input data (i.e. the `EntrySet`) and send each interaction to the `getScores` method that does the actual calculation:
 {{{
 Iterator<Entry> it = entrySet.getEntries().iterator();
 while (it.hasNext()){
@@ -90,5 +90,5 @@ while (it.hasNext()){
 		} 
 	}
 }}}
-
-'getScores' is an abstract method, which means that it has to be defined by a class that inherits from the `AbstractScoreCalculator`. Therefore, if your scoring routine only requires data from the particular interaction that is to be scored, you only need to implement the `getScores` method (for more details on this, see the text above). If, however, you also require data from other parts of the input file (e.g. the experimental parameters provided in an PSI-MI XML file), you will need to also override the `calculateScores` method. `AbstractScoreCalculator` also provides a basic listener interface that handles the outcome of a scoring thread. 
+The `getScores` method of the `AbstractScoreCalculator` is an abstract method, which means that it has to be defined by a class that implements the `AbstractScoreCalculator`. 
+If your scoring routine only requires data from the particular interaction that is to be scored (e.g. the UniProtKB identifiers of the participating interactors), you only need to implement the `getScores` method (for more details on this, see the text above). If, however, you also require data from other parts of the input file (e.g. the experimental parameters provided in an PSI-MI XML file), you will need to make changes to the `calculateScores` method by overriding it in your particular score calculator. 
