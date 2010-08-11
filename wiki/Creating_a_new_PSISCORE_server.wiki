@@ -2,7 +2,7 @@
 #labels Phase-Deploy,Phase-Implementation
 
 =PSISCORE web service reference implementation=
-The source code of the PSISCORE web service reference implementation can be found in the [http://code.google.com/p/psiscore/downloads/list download section] of the PSISCORE project site. PSISCORE relies on [http://maven.apache.org/ Apache Maven] for managing Java dependencies and project settings. Therefore, all you need to do in order to build your own PSISCORE server from the source code provided is to start the Maven build process. If you do not have a local installation of Maven, you can get the software and extensive documentation on how to install it on the [http://maven.apache.org/ Maven homepage].
+The source code of the PSISCORE web service reference implementation can be found in the [http://code.google.com/p/psiscore/downloads/list download] or the [http://code.google.com/p/psiscore/source/checkout source] section of the PSISCORE project site. PSISCORE relies on [http://maven.apache.org/ Apache Maven] for managing Java dependencies and project settings. Therefore, all you need to do in order to build your own PSISCORE server from the source code provided is to start the Maven build process. If you do not have a local installation of Maven, you can get the software and extensive documentation on how to install it on the [http://maven.apache.org/ Maven homepage].
 
 ==Building a new PSISCORE service==
 Once you installed Maven, you can start compiling your own PSISCORE server. The source code of the reference implementation contains a {{{pom.xml}}} file with Maven specific instructions. You can start the build process by issuing the following command in the directory where the {{{pom.xml}}} file is located:
@@ -26,4 +26,4 @@ If you then go to your browser (same comments to the URL as above), you can agai
 
 
 =Implementing a new scoring routine=
-Please see the [PSISCORE_web_service_implementation_details implementation details] for detailed instructions, how to adapt the source code to your needs.
+Before you will be able to serve your confidence scores, you will need to write a scoring routine that can access your data. Please see the [PSISCORE_web_service_implementation_details implementation details] for detailed instructions, how to adapt the source code of the reference implementation to your needs.
