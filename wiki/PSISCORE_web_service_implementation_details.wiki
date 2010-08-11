@@ -1,8 +1,9 @@
 #summary Details for the implementation of a new score calculator
 #labels Phase-Implementation
 
-In the following you will find all the information required to implement your own scoring class with the help of the reference implementation. If you want more details on how to compile the server and how to deploy it, you might want to read [Creating_a_new_PSISCORE_server this document]. 
-By using Java inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working calculator is to create a class that implements two specific methods, one that does the scoring, and one that tells PSISCORE clients what sort of scoring you offer. 
+In the following you will find all the information required to implement your own scoring class with the help of the reference implementation. If you want more details on how to compile the server and how to deploy it, you might want to read [Creating_a_new_PSISCORE_server]. 
+
+By using Java inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working calculator is to create a class that implements two methods, one that does the scoring, and one that describes what sort of scoring you offer. 
 
 If you just want to develop a PSISCORE server class without knowing the stuff running in the background, read the *Quick start* below. If you are interested in more implementation details, you can dig deeper in *All the details*.
 
@@ -11,7 +12,20 @@ If you just want to develop a PSISCORE server class without knowing the stuff ru
 =Quick start=
 
 ===`getScores()`===
-This method is the place where the scoring of individual interactions is performed. 
+This method is the place where the scoring of individual interactions is performed. The input to the method is an `Interaction` object that contains references to all its participating interactors, their database identifiers, etc. If your method provides confidence scores that are precalculated, then you would look up the scores in your system and add the like in the following:
+
+{{{
+Names names = new Names();
+names.setShortLabel("your confidence");
+Unit unit = new Unit();
+unit.setNames(names);
+Confidence confidence = new Confidence();
+confidence.setUnit(unit);
+confidence.setValue(value); // e.g. "1.0"
+
+Collection<Confidence> confidences = interaction.getConfidences();
+confidences.add(confidence);
+}}}
 
 
 ===`getSupportedScoringMethods()===
