@@ -65,6 +65,8 @@ private String[] calculatorClasses = {"org.hupo.psi.mi.psiscore.ws.ExampleScoreC
 
 In this example, the scoring server provides two calculator classes. If you want to add or remove certain calculators, you can do so by simply changing the list above. Be careful to use the correct combination of package (e.g. "org.hupo.psi.mi.psiscore.ws") and class name ("ExampleScoreCalculator") as your calculator can otherwise not be loaded. 
 
+With your new score calculator implemented and registered in the `DefaultPsiscoreService`  you can [Creating_a_new_PSISCORE_server compile] the source code and test your implementation. 
+
 ----
 
 =All the details=
