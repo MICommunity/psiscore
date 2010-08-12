@@ -54,16 +54,16 @@ return descriptorList;
 ===Your scoring calculator class===
 The two methods `getScores` and `getSupportedScoringMethods` have to be located in a Java class that extends the `AbstractScoreCalculator` (described in more details below). You can see two working exemplary scoring calculators in the reference implementation [http://code.google.com/p/psiscore/source/checkout source code]. Both calculators read confidence scores for certain binary interactions from flat text files. These calculators should only illustrate the general architecture of the reference implementation.
 
-==2) Registering your scoring class==
+==2) Registering your score calculator==
 Once you finished the implementation of your scoring class, you only need to register it with the `DefaultPsiscoreService` that manages all score calculators.
 
-The code snippet that contains the calculator listing can be seen below:
+The code snippet in the `DefaultPsiscoreService` that contains the calculator listing can be seen below:
 {{{
 private String[] calculatorClasses = {"org.hupo.psi.mi.psiscore.ws.ExampleScoreCalculator",
     		"org.hupo.psi.mi.psiscore.ws.YetAnotherExampleScoreCalculator"};
 }}}
 
-In this example, the scoring server provides two calculator classes. If you want to add or remove certain calculators, you do so by simply changing the list above. By careful to use the correct combination of package (e.g. org.hupo.psi.mi.psiscore.ws.) and class name (ExampleScoreCalculator) as your calculator can otherwise not be loaded. 
+In this example, the scoring server provides two calculator classes. If you want to add or remove certain calculators, you can do so by simply changing the list above. Be careful to use the correct combination of package (e.g. "org.hupo.psi.mi.psiscore.ws") and class name ("ExampleScoreCalculator") as your calculator can otherwise not be loaded. 
 
 ----
 
