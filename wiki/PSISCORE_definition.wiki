@@ -27,7 +27,7 @@ Returns a servers available scoring algorithms and their respective requirements
     * PsiScoreException 
 
 
-==`getSupportedDataType()`==
+==`getSupportedDataTypes()`==
 
 Returns the input data types this server can handle (either XML, TAB, ot both, None doesn't make any sense)
 
@@ -83,7 +83,7 @@ Retrieves the finished job data.
     * jobID
   * Returns:
     *data + scores (XML or MITAB file)
-    * Report: (list of strings)
+    *Report: (list of strings)
   * Exceptions:
     * PsiScoreException
     * InvalidJobStateException --> If the job specified is still in Queue, still running, or already expired from cache
