@@ -82,8 +82,8 @@ Retrieves the finished job data.
   * Takes:
     * jobID
   * Returns:
-    *data + scores (XML or MITAB file)
-    *Report: (list of strings)
+    * data + scores (XML or MITAB file)
+    * Report: (list of strings)
   * Exceptions:
     * PsiScoreException
     * InvalidJobStateException --> If the job specified is still in Queue, still running, or already expired from cache
