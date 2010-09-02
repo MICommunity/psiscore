@@ -6,6 +6,7 @@
 This section contains a description of the minimal steps required to implement a new score calculator. Basically, all you need to do is 
   # implement a class with two methods described below and 
   # tell your server to use this scoring class
+If you want to know more details on the Java reference implementation, read on [PSISCORE_web_service_implementation_details here].
 
 ==1) The mandatory scoring methods==
 
