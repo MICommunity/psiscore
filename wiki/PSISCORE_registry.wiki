@@ -2,9 +2,14 @@
 #labels Phase-Deploy,Phase-Support
 
 = Introduction =
-The PSISCORE registry maintains a list of all available scoring servers and the scoring routines they provide. This enables new PSISCORE server providers to make their service available to all client users simply by registering it with the registry.  
+The PSISCORE registry maintains a list of all available scoring servers and the scoring routines they provide. This allows new PSISCORE service providers to make their resource available to PSISCORE clients simply by registering it with the registry. The registry can be queried in an automatic fashion in the way described below, or it can be browsed online. 
 
-Currently, a powerful registry similar to the [http://www.dasregistry.org/ DAS registry] or the [http://code.google.com/p/psicquic/wiki/Registry PSICQUIC registry] is being developed. As long as this service is not publicaly available, the list of servers will be manually maintained. 
+The PSISCORE registry can currently be found at
+*http://psiscore.bioinf.mpi-inf.mpg.de/registry.php*
 
-= PSISCORE servers currently available =
-  # http://psiscore.bioinf.mpi-inf.mpg.de/psiscorews/webservices/psiscore
+== Adding a new PSISCORE servers ==
+The current version of the PSISCORE registry is manually curated, therefore you can add a new PSISCORE server be mailing its address to hagen (at) mpi-inf.mpg.de. It will instantly be included in the registry and will from then on be available to all PSISCORE users.
+
+== Descriptions of scoring methods ==
+PSISCORE servers provide a short description in the form of keywords for each scoring method they offer. These keywords are intended for automatic classification or selection of certain methods, but they do not provide the user with a comprehensive description of the algorithm details. Therefore, each scoring algorithm should also be defined in the Molecular Interactions controlled vocabulary (MI CV, http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI). As the confidence section of the MI CV is still under development, this description is currently also maintained by the PSISCORE registry. 
+
