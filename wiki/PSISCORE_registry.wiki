@@ -5,11 +5,20 @@
 The PSISCORE registry maintains a list of all available scoring servers and the scoring routines they provide. This allows new PSISCORE service providers to make their resource available to PSISCORE clients simply by registering it with the registry. The registry can be queried in an automatic fashion in the way described below, or it can be browsed online. 
 
 The PSISCORE registry can currently be found at
-*http://psiscore.bioinf.mpi-inf.mpg.de/registry.php*
+*[http://psiscore.bioinf.mpi-inf.mpg.de/registry.php]*
 
 == Adding a new PSISCORE servers ==
 The current version of the PSISCORE registry is manually curated, therefore you can add a new PSISCORE server be mailing its address to hagen (at) mpi-inf.mpg.de. It will instantly be included in the registry and will from then on be available to all PSISCORE users.
 
-== Descriptions of scoring methods ==
+== Description of scoring methods ==
 PSISCORE servers provide a short description in the form of keywords for each scoring method they offer. These keywords are intended for automatic classification or selection of certain methods, but they do not provide the user with a comprehensive description of the algorithm details. Therefore, each scoring algorithm should also be defined in the Molecular Interactions controlled vocabulary (MI CV, http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI). As the confidence section of the MI CV is still under development, this description is currently also maintained by the PSISCORE registry. 
 
+= Accessing the registry = 
+
+A list of all scoring servers that are currently registered can be retrieved via the query 
+
+{{{
+http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?format=XML
+}}}
+
+This will return a simple XML document with a description of each scoring method.
