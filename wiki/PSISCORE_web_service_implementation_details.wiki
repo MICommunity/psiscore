@@ -1,55 +1,64 @@
 #summary Details for the implementation of a new score calculator
 #labels Phase-Implementation
 
-In the following you will find all the information required to implement your own scoring class with the help of the reference implementation. If you want more details on how to compile the server and how to deploy it, you might want to read [Creating_a_new_PSISCORE_server]. 
+In this document you will find all the information required to implement your own score calculator with the help of the Java reference implementation. If you want more details on how to compile the reference implementation and how to deploy it, you might want to read [Creating_a_new_PSISCORE_server]. 
 
-By using Java inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working calculator is to create a class that implements two methods, one that does the scoring, and one that describes what sort of scoring you offer. 
+By using Java inheritance, we try to hide as much implementation details from you as possible. In essence, all you need to do in order to get a working score calculator is to create a class that implements two methods, one that performs the scoring of an individual interaction object, and one that describes what sort of scoring methods your calculator offers. 
 
-If you just want to develop a PSISCORE server class without knowing the stuff running in the background, read the *Quick start* below. If you are interested in more implementation details, you can dig deeper in *All the details*.
+If you just want to develop a PSISCORE server class without knowing all the background details, read the *Quick start* below. If you want to change other aspects of your server as well, you can find more implementation details in *All the details*.
 
 ----
 
 =Quick start=
 
-This section contains a description of the minimal steps required to implement a new scoring server. Basically, all you need to do is 
+This section contains a description of the minimal steps required to implement a new score calculator. Basically, all you need to do is 
   # implement a class with two methods described below and 
   # tell your server to use this scoring class
 
-==1) The two mandatory scoring methods==
+==1) The mandatory scoring methods==
 
-===`getScores` method===
-This method is the place where the scoring of individual interactions is performed. The input to the method is an `Interaction` object that contains references to all its participating interactors, their database identifiers, etc. If your method provides confidence scores that are precalculated, then you would only need to look up the scores in your database and add them as new `Confidence` objects to the `Interaction` like in the following:
+===`getScores()` method===
+This method is the place where the scoring of individual interactions is performed. The input to the method is an `Interaction` object of the EntrySet representation of the input data. This interaction object contains references to all its participating interactors, their database identifiers, etc. If your method provides confidence scores that are precalculated, then you will only need to look up the scores in your database and add them as new `Confidence` objects to the `Interaction` like in the following:
 
 {{{
+Collection<Confidence> confidences = new HashSet<Confidence>();
+
 Names names = new Names();
-names.setShortLabel("your confidence");
+names.setShortLabel("confidence");
+names.setFullName("your confidence");
 Unit unit = new Unit();
 unit.setNames(names);
 Confidence confidence = new Confidence();
 confidence.setUnit(unit);
 confidence.setValue(value); // e.g. "1.0"
 
-Collection<Confidence> confidences = interaction.getConfidences();
 confidences.add(confidence);
+
+return confidences;
 }}}
 
-The method will return the same interaction object it received as input, however, now with the added confidences.
+The `getScores` method will return the collection of confidences that your calculator generated. 
 
 ===`getSupportedScoringMethods` method===
-This method tells PSISCORE clients and the PSISCORE registry, what scoring algorithms your server is providing. Users can use this list to only select certain scoring algorithms, if your server provides more than one.
+This method tells the PSISCORE server (and indirectly the PSISCORE clients and the PSISCORE registry), what scoring algorithms your server provides and what requirements each method potentially has. Users can use this list to select certain scoring algorithms.
 A very simple, hard-coded, example for this method is listed below:
 
 {{{
 List<AlgorithmDescriptor> descriptorList = new ArrayList<AlgorithmDescriptor>();
+
 AlgorithmDescriptor descriptor = new AlgorithmDescriptor();
-descriptor.setId("example confidence"); // this has to be unique within the server
+descriptor.setId("example confidence"); // this id has to be unique within the server
 List<String> algorithmTypes = descriptor.getAlgorithmType();
 algorithmTypes.add("predicted");
 algorithmTypes.add("functional similarity");
 descriptor.setRange("0-1");
+
 descriptorList.add(descriptor);
+
 return descriptorList;
 }}}
+
+The id of the scoring method has to be unique within the server. In addition, this id will be used to link your service to a textual description in the [http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI Molecular Interaction controlled vocabulary] or the [PSISCORE_registry].
 
 ===Your scoring calculator class===
 The two methods `getScores` and `getSupportedScoringMethods` have to be located in a Java class that extends the `AbstractScoreCalculator` (described in more details below). You can see two working exemplary scoring calculators in the reference implementation [http://code.google.com/p/psiscore/source/checkout source code]. Both calculators read confidence scores for certain binary interactions from flat text files. These calculators should only illustrate the general architecture of the reference implementation.
