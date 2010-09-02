@@ -88,7 +88,7 @@ Retrieves the finished job data.
     * Report: (list of strings)
   * Exceptions:
     * PsiScoreException
-    * J--> If the job specified is still in Queue, still running, or already expired from cache
+    * JobStillRunningException--> If the job specified is still in Queue, still running, or already expired from cache
     * InvalidArgumentException --> if the JobID specified is completely unknown, or otherwise malformed.
 
 =General considerations= 
