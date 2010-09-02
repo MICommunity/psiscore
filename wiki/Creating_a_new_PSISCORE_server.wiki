@@ -1,30 +1,30 @@
-#summary How to compile and set up your own PSISCORE server using the reference implementation
+#summary compile and set up your own PSISCORE server using the reference implementation
 #labels Phase-Deploy,Phase-Implementation
 
-=PSISCORE web service reference implementation=
-The source code of the PSISCORE web service reference implementation can be found in the [http://code.google.com/p/psiscore/downloads/list download] or the [http://code.google.com/p/psiscore/source/checkout source] section of the PSISCORE project site. Please note that you will need to do some small changes to the server reference implementation before you can deploy it at your place. Please have a look at [PSISCORE_web_service_implementation_details this document] to see the steps required.
+=Web Service reference implementation=
+The source code of the PSISCORE web service reference implementation can be found in the [http://code.google.com/p/psiscore/downloads/list download] or the [http://code.google.com/p/psiscore/source/checkout source] section of the PSISCORE project site. Please note that you will need to add your own [ScoreCalculator] to this reference implementation. 
 
 ==Building a new PSISCORE service==
-PSISCORE relies on [http://maven.apache.org/ Apache Maven] for managing Java dependencies and project settings. Therefore, all you need to do in order to build your own PSISCORE server from the source code provided is to start the Maven build process. If you do not have a local installation of Maven, you can get the software and extensive documentation on how to install it on the [http://maven.apache.org/ Maven homepage].
+The PSISCORE reference implementation relies on [http://maven.apache.org/ Apache Maven 2] for managing Java dependencies and project settings. In order to build your own PSISCORE server from the source code provided you therefore only need to start the Maven build process. If you do not have a local installation of Maven, you can download the software and extensive documentation on how to use it on the [http://maven.apache.org/ Maven homepage].
 
-Once you installed Maven, you can start compiling your own PSISCORE server. The source code of the reference implementation contains a {{{pom.xml}}} file with Maven specific instructions. You can start the build process by issuing the following command in the directory where the {{{pom.xml}}} file is located:
+Once you installed Maven, you can start compiling the PSISCORE sources. The source code of the reference implementation contains a {{{pom.xml}}} file with Maven specific instructions. You can start the build process by issuing the following command in the directory where the {{{pom.xml}}} file is located:
 
 {{{mvn clean install}}}
 
 Maven will then download all the Java libraries required by the PSISCORE reference implementation, compile the source code, and package it into a web archive (war) file. 
 
 ==Testing the PSISCORE service==
-Once the Maven build process has finished, you can deploy the web archive into a dedicated server like [http://tomcat.apache.org/ Apache Tomcat] or [http://jetty.codehaus.org/jetty/ Jetty]. 
+Once the Maven build process has finished, you can deploy the web archive into a dedicated servlet container, such as [http://tomcat.apache.org/ Apache Tomcat] or [http://jetty.codehaus.org/jetty/ Jetty]. 
 
 ===Apache Tomcat===
-After placing the war file into the {{{webapps}}} folder of your Apache Tomcat installation (see the documentation at  [http://tomcat.apache.org/ Apache Tomcat] for instructions on how to obtain a server installation), you can start the server and access its test page in your local browser (without changes to its configuration, the URL will be "http://localhost:8080/" or "http://localhost:8180/" followed by the PSISCORE directory name with the webapps directory, for instance "psiscore-ws/". If everything went well, you will see a test page that will contain the web service description of your PSISCORE service. 
+After placing the war file into the {{{webapps}}} folder of your Apache Tomcat installation (see the documentation at  [http://tomcat.apache.org/ Apache Tomcat] for instructions on how to obtain a local server installation), you can start the server and access its test page in your local browser (without changes to its configuration, the URL will be "http://localhost:8080/" followed by the PSISCORE directory name within the webapps directory, for instance "psiscore-ws/". If everything went well, you will see a test page that will contain the web service description of your PSISCORE service. 
 
 ===Jetty===
-An even easier way, especially for testing your PSISCORE service, is to use the [http://jetty.codehaus.org/jetty/ Jetty] server that is already configured in the PSISCORE Maven configuration file. To start Jetty right after the build process has finished, you need to add {{{jetty:run}}} to the build command described above:
+An even easier way, especially for quickly testing your PSISCORE service, is to use the [http://jetty.codehaus.org/jetty/ Jetty] server that is already configured in the PSISCORE Maven configuration file. To start Jetty right after the build process has finished, you need to add {{{jetty:run}}} to the build command described above:
 
 {{{mvn clean install jetty:run}}}
 
-If you then go to your browser (same comments to the URL as above), you can again see the aforementioned test page and the web service description of your PSISCORE service. 
+Again, if you then go to your browser and check your localhost, you can see the aforementioned test page and the web service description of your PSISCORE service. 
 
 =Implementing a new scoring routine=
-Before you will be able to serve your confidence scores, you will need to write a score calculator that can access your data. Please see the [PSISCORE_web_service_implementation_details implementation details] for detailed instructions, how to adapt the source code of the reference implementation to your needs.
+Before you will be able to serve your confidence scores, you will need to write a [ScoreCalculator] that knows how to access your data or calculate the scores. Please see the [PSISCORE_web_service_implementation_details implementation details] for detailed instructions, how to adapt the source code of the reference implementation to your needs.
