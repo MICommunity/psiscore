@@ -16,10 +16,22 @@
 package org.hupo.psi.mi.psiscore.ws;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.hupo.psi.mi.psiscore.AlgorithmDescriptor;
+import org.hupo.psi.mi.psiscore.InvalidArgumentException;
+import org.hupo.psi.mi.psiscore.PsiscoreException;
+import org.hupo.psi.mi.psiscore.PsiscoreFault;
+import org.hupo.psi.mi.psiscore.Report;
+import org.hupo.psi.mi.psiscore.model.PsiscoreInput;
+import org.hupo.psi.mi.psiscore.util.PsiTools;
 
+import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.xml.model.EntrySet;
 
 
@@ -27,18 +39,24 @@ import psidev.psi.mi.xml.model.EntrySet;
  * Parameters of the scoring job. Contains jobId, desired 
  * scoring algorithms, return format etc.
  *
- * @author Hagen Blankenburg 
+ * @author hagen (mpi-inf,mpg) 
  * @version $Id$
  */
 public class ScoringParameters{
 	
-	private EntrySet entrySet = null;
+	private PsiscoreInput inputData = null;
+	private Report scoringReport = new Report();
+	
 	private String inputFormat = null;
 	private String returnFormat = null;
 	private String jobID = null;
-	private boolean scoresAdded = false;
+	
 	private List<AlgorithmDescriptor> algorithmDescriptions = null;
+	private Set<String> algorithmIds = null;
+
 	private Exception errorOccured = null;
+	private boolean scoresAdded = false;
+	private boolean convertedMitab = false;
 	
 	
 	/**
@@ -50,18 +68,40 @@ public class ScoringParameters{
 
 
 	/**
+	 * Return the EntrySet representation of the input data. if the input is present in the xml
+	 * format already, no conversion needs to be perfomred. if the input is present as a mitab,
+	 * it will be converted to xml and then stored for later access
 	 * @return the entrySet
+	 * @throws InvalidArgumentException 
+	 * @throws PsiscoreException 
 	 */
-	public EntrySet getEntrySet() {
-		return entrySet;
+	public EntrySet getEntrySet() throws PsiscoreException {
+		if (inputData.xmlUsed()){
+			return inputData.getXmlEntySet();
+		}else if (inputData.mitabUsed() ){
+			convertedMitab = true;
+			this.inputData.setXmlEntySet(PsiTools.getEntrySetFromBinaryInteractions(inputData.getMitabInteractions()));
+			return inputData.getXmlEntySet();
+		}else{
+			throw new PsiscoreException("No valid input detected.", new PsiscoreFault());
+		}
 	}
+	
 
+	public Collection<BinaryInteraction> getBinaryInteraction() throws PsiscoreException{
+		if (inputData.mitabUsed()){
+			return inputData.getMitabInteractions();
+		}else{
+			throw new PsiscoreException("No valid input detected.", new PsiscoreFault()); 
+		}
+	}
+	
 
 	/**
 	 * @param entrySet the entrySet to set
 	 */
 	public void setEntrySet(EntrySet entrySet) {
-		this.entrySet = entrySet;
+		this.inputData.setXmlEntySet(entrySet);
 	}
 
 
@@ -118,7 +158,7 @@ public class ScoringParameters{
 	}
 
 
-	public boolean isScoresAdded() {
+	public boolean scoresAdded() {
 		return scoresAdded;
 	}
 
@@ -137,6 +177,7 @@ public class ScoringParameters{
 	public void setAlgorithmDescriptions(
 			List<AlgorithmDescriptor> algorithmDescriptions) {
 		this.algorithmDescriptions = algorithmDescriptions;
+		this.algorithmIds = extractAlgorithmIds();
 	}
 
 
@@ -154,6 +195,99 @@ public class ScoringParameters{
 	public void setErrorOccured(Exception errorOccured) {
 		this.errorOccured = errorOccured;
 	}
+	
+	/**
+     * Get a set of all ids of requested scoring methods
+     * @return 
+     * @throws PsiscoreException
+     */
+    private Set<String> extractAlgorithmIds(){
+    	Set<String> requestedAlgorithmIds = new HashSet<String>();
+		
+		Iterator<AlgorithmDescriptor> it = algorithmDescriptions.iterator();
+		while (it.hasNext()){
+			AlgorithmDescriptor descriptor = it.next();
+			requestedAlgorithmIds.add(descriptor.getId());
+			
+		}
+		return requestedAlgorithmIds;
+    }
+
+
+	/**
+	 * @param algorithmIds the algorithmIds to set
+	 */
+	public void setAlgorithmIds(Set<String> algorithmIds) {
+		this.algorithmIds = algorithmIds;
+	}
+
+
+	/**
+	 * @return the algorithmIds
+	 */
+	public Set<String> getAlgorithmIds() {
+		return algorithmIds;
+	}
+
+
+	/**
+	 * @return the inputData
+	 */
+	public PsiscoreInput getInputData() {
+		return inputData;
+	}
+
+
+	/**
+	 * @param inputData the inputData to set
+	 */
+	public void setInputData(PsiscoreInput inputData) {
+		this.inputData = inputData;
+
+		if (inputData.xmlUsed()){
+			inputFormat = PsiTools.RETURN_TYPE_XML25;
+		}else if(inputData.mitabUsed()){
+			inputFormat = PsiTools.RETURN_TYPE_MITAB25;
+		}
+	}
+
+
+	/**
+	 * @return the convertedMitab
+	 */
+	public boolean isConvertedMitab() {
+		return convertedMitab;
+	}
+
+
+	/**
+	 * @param convertedMitab the convertedMitab to set
+	 */
+	public void setConvertedMitab(boolean convertedMitab) {
+		this.convertedMitab = convertedMitab;
+	}
+
+
+	/**
+	 * @return the scoringReport
+	 */
+	public Report getScoringReport() {
+		return scoringReport;
+	}
+
+
+	/**
+	 * @param scoringReport the scoringReport to set
+	 */
+	public void setScoringReport(Report scoringReport) {
+		this.scoringReport = scoringReport;
+	}
+
+
+
+
+
+	
 	
 	
 }

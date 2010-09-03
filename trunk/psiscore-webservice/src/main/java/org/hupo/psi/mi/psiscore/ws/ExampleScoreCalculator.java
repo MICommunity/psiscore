@@ -6,32 +6,39 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import psidev.psi.mi.xml.model.*;
+
 import org.hupo.psi.mi.psiscore.*;
 import org.springframework.stereotype.Controller;
 
 /**
  * A simple example scoring server that looks up confidence scores in a file
  *
- * @author Hagen Blankenburg 
+ * @author hagen (mpi-inf,mpg) 
  * @version $Id$
  */
-@Controller
-public class ExampleScoreCalculator extends AbstractScoreCalculator{
-	Map<String, Double> scores = null;
+public class ExampleScoreCalculator extends SimpleScoreCalculator{
+	private Map<String, Double> scores = null;
+	private String algorithmId = "example confidence";
 	
 	public ExampleScoreCalculator() throws PsiscoreException{
+		super();
 		// upon initialization, retrive the confidence scores from a file.
 		// in a database environment, this would be the place to acquire
 		// the database connection
-		String path = System.getProperty("user.dir")+"/src/example/resources/exampleScores.txt";
+		String path = "http://psiscore.bioinf.mpi-inf.mpg.de/exampleScores.txt";
 		scores = readScoringFile(path);
 	}
 	
@@ -44,7 +51,9 @@ public class ExampleScoreCalculator extends AbstractScoreCalculator{
      * @return the same interactions plus added scores
      * @throws PsiscoreException
      */
-    protected Interaction getScores (Interaction interaction) throws PsiscoreException{ 
+    protected Collection<Confidence> getInteractionScores (Interaction interaction) throws PsiscoreException{
+    	Collection<Confidence> confidences = new HashSet<Confidence>();
+    	
     	// this scoring method only requires the ids of the interactors
     	List<String> queries = new ArrayList<String>();
 
@@ -58,7 +67,7 @@ public class ExampleScoreCalculator extends AbstractScoreCalculator{
 
 		// it can only work with two interactions, if there is a complex we cannot score it
 		if (queries.size() != 2){
-			return interaction;
+			return confidences;
 		}
 		// try the first combination
 		Double confScore = scores.get(queries.get(0)+"-"+queries.get(1));
@@ -68,27 +77,16 @@ public class ExampleScoreCalculator extends AbstractScoreCalculator{
 		}
 		// if it was stil lnot successful, we don't have any scores
 		if (confScore == null){
-			return interaction;
+			return confidences;
 		}
 		
+		
+		
 		// now we only need to add a new confidence element
-		String confidenceUnit = "example confidence";
+		String confidenceUnit = algorithmId;
 		String value = confScore.toString();
-		Confidence confidence = new Confidence();
-		Unit unit = new Unit();
-		Names names = new Names();
-		names.setShortLabel(confidenceUnit);
-		unit.setNames(names);
-		confidence.setUnit(unit);
-		confidence.setValue(value);
-
-		// the confidence section if the interaction, the place to add new confidences
-    	Collection<Confidence> confidences = interaction.getConfidences();
-		confidences.add(confidence);
-		// we note that we found some new scores for at least one interaction
-		this.scoringParameters.setScoresAdded(true);
-	    		            		
-		return interaction;
+		confidences.add(ConfidenceGenerator.getNewEntrySetConfidence(confidenceUnit, value));
+		return confidences;
     }
     
     
@@ -102,8 +100,8 @@ public class ExampleScoreCalculator extends AbstractScoreCalculator{
     	List<AlgorithmDescriptor> descriptorList = new ArrayList<AlgorithmDescriptor>();
     	
     	AlgorithmDescriptor descriptor = new AlgorithmDescriptor();
-    	descriptor.setId("example confidence");
-    	List<String> algorithmTypes = descriptor.getAlgorithmType();
+    	descriptor.setId(algorithmId);
+    	List<String> algorithmTypes = descriptor.getAlgorithmTypes();
     	algorithmTypes.add("predicted");
     	descriptor.setRange("0-1");
     	descriptorList.add(descriptor);
@@ -121,27 +119,20 @@ public class ExampleScoreCalculator extends AbstractScoreCalculator{
 	 */
 	private Map<String, Double> readScoringFile(String path) throws PsiscoreException{
 		Map<String, Double> scores = new HashMap<String, Double>();
-		FileInputStream fstream = null;
-		DataInputStream in = null;
-	    BufferedReader br = null;
-    	try{
-    		fstream = new FileInputStream(path);
-			in = new DataInputStream(fstream);
-    	    br = new BufferedReader(new InputStreamReader(in));
-    	    String strLine;
-    	    while ((strLine = br.readLine()) != null)   {
-    	    	String[] temp = strLine.split("\\;");
+		try {
+			URL url = new URL(path);
+			InputStream in = url.openStream ();
+			BufferedReader dis = new BufferedReader (new InputStreamReader (in));
+			String line = dis.readLine ();
+			while (	( line = dis.readLine ()) != null) {
+				String[] temp = line.split("\\;");
     	    	// simply store a combined id from both interactors and the score
     	    	scores.put(temp[0].trim()+"-"+temp[1].trim(),Double.valueOf(temp[2].trim()));
 			}
-    	    fstream.close();
-			br.close();
 			in.close();
-    	}catch (FileNotFoundException e1){
-    		throw new PsiscoreException("The file you specified does not exists.");
     	}catch (IOException e) {
-    		throw new PsiscoreException("The file you specified cannot be read.");
-    	}
+	       throw new PsiscoreException("File not found", new PsiscoreFault(), e);
+	    }
     	return scores;
 	}
    

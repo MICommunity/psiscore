@@ -15,135 +15,145 @@
  */
 package org.hupo.psi.mi.psiscore.ws;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
+import psidev.psi.mi.xml.model.Confidence;
+import psidev.psi.mi.xml.model.EntrySet;
+import psidev.psi.mi.xml.model.Names;
+import psidev.psi.mi.xml.model.Unit;
 
-import psidev.psi.mi.xml.model.*;
+import org.hupo.psi.mi.psiscore.AlgorithmDescriptor;
+import org.hupo.psi.mi.psiscore.PsiscoreException;
 
 
-import org.hupo.psi.mi.psiscore.*;
-import org.hupo.psi.mi.psiscore.ws.*;
-
-import org.springframework.stereotype.Controller;
 
 /**
- * TODO write description of the class.
+ * Basic scoring interface, not defining whether the scoring will happen
+ * on the XML or MITAB level. 
  *
- * @author Hagen Blankenburg 
+ * @author Bruno Aranda (baranda@ebi.ac.uk)
+ * @author hagen (mpi-inf,mpg)
  * @version $Id$
  */
-@Controller
-public abstract class AbstractScoreCalculator extends ScoreCalculator{
-	
-	public AbstractScoreCalculator(){
-		super();
-	}
-	
-	public AbstractScoreCalculator(ScoringParameters params){
-		super(params);
-	}
+public abstract class AbstractScoreCalculator extends Thread{
 
+	 ScoringParameters scoringParameters = null;
+	 Set<ScoringListener> scoringListeners = null;
+	
 	/**
-	 * Actual calculation routine that will be called
-	 * once the scoring thread started. calculates
-	 * the scores and notifies a listener once it finishes
+	 * Default constructor
 	 */
-    public void run() {
-    	try {
-			calculateScores(entrySet);
-		} catch (PsiscoreException e) {
-			e.printStackTrace();
-			triggerErrorOccured();
-		}
-		
-		if (this.scoringParameters.isScoresAdded()){
-			triggerScoresAdded();
-		}else{
-			triggerNoScoresAdded();
-		}
+    public AbstractScoreCalculator(){
+    	super();
+    	scoringListeners = new HashSet<ScoringListener>();
     }
     
     /**
-     * Calculate the scores for each enty in the EntrySet. 
+     * Constructor 
+     * @param params
      */
-    public EntrySet calculateScores(EntrySet entrySet) throws PsiscoreException{
-    	if (entrySet.getEntries() == null){
-    		 throw new PsiscoreException("Entry Set does not contain any entries", new PsiscoreFault());
-    	}
-    	// go over all entries
-		Iterator<Entry> it = entrySet.getEntries().iterator();
-		while (it.hasNext()){
-			Entry entry = it.next();
-			// and go over all interactions in that entry
-			Collection<Interaction> interactions = entry.getInteractions();
-			for (Iterator<Interaction> interactionIt = interactions.iterator(); interactionIt.hasNext();){
-				Interaction interaction = interactionIt.next();
-				// and request the scores for that interaction
-				interaction = getScores(interaction);
-			} 
-		}
-		
-        return entrySet;
+    public AbstractScoreCalculator(ScoringParameters params){
+    	super();
+    	
+    	this.scoringParameters = params;
+    	this.scoringListeners = new HashSet<ScoringListener>();
     }
     
     
-    /**
-     * Calculate scores for an indivudial single interaction. 
-     *  
-     * @param interaction
-     * @return the same interactions plus added scores
-     * @throws PsiscoreException
-     */
-    protected abstract Interaction getScores (Interaction interaction) throws PsiscoreException;
-    
     
     /**
-     * add the scoring methods (description, range of the score) and 
-     * their protential requirements 
+     * Return the list of scoring algorithm descriptions a scoring calculator can calculate
      * @return
      * @throws PsiscoreException
      */
-    protected abstract List<AlgorithmDescriptor> getSupportedScoringMethods() throws PsiscoreException;
+    abstract List<AlgorithmDescriptor> getSupportedScoringMethods() throws PsiscoreException;
     
-    
-    
-    private void triggerScoresAdded() {
-        Iterator<ScoringListener> iter = scoringListeners.iterator();
-        while (iter.hasNext()){
-            ScoringListener li = iter.next();
-            li.scoresAdded(this.scoringParameters);
-        }
-    }
-    
-    private void triggerNoScoresAdded() {
-        Iterator<ScoringListener> iter = scoringListeners.iterator();
-        while (iter.hasNext()){
-            ScoringListener li = iter.next();
-            li.noScoresAdded(this.scoringParameters);
-        }
-    }
-
-    private void triggerErrorOccured() {
-        Iterator<ScoringListener> iter = scoringListeners.iterator();
-        while (iter.hasNext()){
-            ScoringListener li = iter.next();
-            li.errorOccured(this.scoringParameters);
-        }
-    }
-    
-  
     
    
+    
+    /**
+     * Add a listener
+     * @param listener
+     */
+    public void addScoringListener (ScoringListener listener){
+    	
+    	if (this.scoringListeners == null){
+    		this.scoringListeners = new HashSet<ScoringListener>();
+    	}
+    	this.scoringListeners.add(listener);
+    }
+    
+    /**
+     * Set the scoring parameters
+     * @param parameters
+     */
+    public void setScoringParameters (ScoringParameters parameters){
+       	this.scoringParameters = parameters;
+    }
+
+	/**
+	 * @return the scoringParameters
+	 */
+	public ScoringParameters getScoringParameters() {
+		return scoringParameters;
+	}
+
+	/**
+	 * @return the scoringListeners
+	 */
+	public Set<ScoringListener> getScoringListeners() {
+		return scoringListeners;
+	}
+
+	/**
+	 * @param scoringListeners the scoringListeners to set
+	 */
+	public void setScoringListeners(Set<ScoringListener> scoringListeners) {
+		this.scoringListeners = scoringListeners;
+	}
+    
+	
+	
+	/**
+	 * Trigger the event that the scoring has finished successfully to all listeners
+	 * @throws PsiscoreException
+	 */
+	protected void triggerScoresAdded() throws PsiscoreException {
+	        Iterator<ScoringListener> iter = scoringListeners.iterator();
+	        while (iter.hasNext()){
+	            ScoringListener li = iter.next();
+	            li.scoresAdded(getScoringParameters());
+	        }
+	    }
+	    
+	    
+	    
+	/**
+	 * Trigger the event that the scoring finished without the addition of
+	 * new scores to all listeners
+	 */
+	protected void triggerNoScoresAdded()  throws PsiscoreException{
+	        Iterator<ScoringListener> iter = scoringListeners.iterator();
+	        while (iter.hasNext()){
+	            ScoringListener li = iter.next();
+	            li.noScoresAdded(getScoringParameters());
+	        }
+	    }
+	    
+	    
+
+	/**
+	 * Trigger the event that the scoring finished with errors to all listeners
+	 */
+	protected void triggerErrorOccured(){
+	        Iterator<ScoringListener> iter = scoringListeners.iterator();
+	        while (iter.hasNext()){
+	            ScoringListener li = iter.next();
+	            li.errorOccured(getScoringParameters());
+	        }
+	    }
+
 }
