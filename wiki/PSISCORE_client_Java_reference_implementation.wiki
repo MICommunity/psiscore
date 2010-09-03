@@ -1,0 +1,8 @@
+#summary Java reference implementation to access PSISCORE servers
+#labels Phase-Deploy
+
+= Introduction =
+
+We provide a reference implementation that allows you to access PSISCORE servers in an easy fashion. You have two options of obtaining the reference implementation:
+  # the packaged jar file that contains all classes of the reference implementation, but not the required librarires
+  # the source code and the Maven pom file that allows you to build your own PSISCORE client from scratch. 
