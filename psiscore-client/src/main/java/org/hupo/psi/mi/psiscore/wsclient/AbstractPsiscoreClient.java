@@ -36,6 +36,7 @@ import java.util.List;
  * Abstract superclass for the PSISCORE clients.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
+ * @author Hagen
  * @version $Id: AbstractPsiscoreClient.java 167 2009-08-12 09:40:05Z brunoaranda $
  */
 public abstract class AbstractPsiscoreClient implements PsiscoreClientInterface {
@@ -47,8 +48,9 @@ public abstract class AbstractPsiscoreClient implements PsiscoreClientInterface 
     }
 
     public AbstractPsiscoreClient(String serviceAddress, long timeout) {
+    	
         if (serviceAddress == null) return;
-
+        System.out.println("New Service : " + serviceAddress);
         ClientProxyFactoryBean factory = new JaxWsProxyFactoryBean();
         factory.setServiceClass(PsiscoreService.class);
         factory.setAddress(serviceAddress);

@@ -26,8 +26,8 @@
 			<xs:element name="getVersion" type="pss:getVersion"/>
             <xs:element name="getVersionResponse" type="pss:getVersionResponse"/>
 			
-			<xs:element name="getSupportedReturnTypes" type="pss:getSupportedReturnTypes"/>
-            <xs:element name="getSupportedReturnTypesResponse" type="pss:getSupportedReturnTypesResponse"/>
+			<xs:element name="getSupportedDataTypes" type="pss:getSupportedDataTypes"/>
+            <xs:element name="getSupportedDataTypesResponse" type="pss:getSupportedDataTypesResponse"/>
 			
 			<xs:element name="submitJob" type="pss:submitJob"/>
             <xs:element name="submitJobResponse" type="pss:submitJobResponse"/>
@@ -102,11 +102,11 @@
                 </xs:sequence>
             </xs:complexType>
 
-            <xs:complexType name="getSupportedReturnTypes">
+            <xs:complexType name="getSupportedDataTypes">
                 <xs:sequence/>
             </xs:complexType>
 
-            <xs:complexType name="getSupportedReturnTypesResponse">
+            <xs:complexType name="getSupportedDataTypesResponse">
                 <xs:sequence>
                     <xs:element name="return" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
                 </xs:sequence>
@@ -179,7 +179,7 @@
             <xs:complexType name="queryResponse">
                 <xs:sequence>
                     <xs:element name="resultSet" type="pss:resultSet"/>
-                    <xs:element name="resultInfo" type="pss:resultInfo"/>
+                    <xs:element name="report" type="pss:report"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -190,12 +190,9 @@
                 </xs:sequence>
             </xs:complexType>
 
-            <xs:complexType name="resultInfo">
+            <xs:complexType name="report">
                 <xs:sequence>
-                    <xs:element name="firstResult" type="xs:int"/>
-                    <xs:element name="totalResults" type="xs:int"/>
-                    <xs:element name="resultType" type="xs:string"/>
-                    <xs:element name="blockSize" type="xs:int"/>
+                    <xs:element name="result" minOccurs="0"  maxOccurs="unbounded" type="xs:string"/>
                 </xs:sequence>
 
             </xs:complexType>
@@ -265,12 +262,12 @@
         <part name="parameters" element="pss:getVersionResponse"/>
     </message>
 
-    <message name="getSupportedReturnTypes">
-        <part element="pss:getSupportedReturnTypes" name="parameters"/>
+    <message name="getSupportedDataTypes">
+        <part element="pss:getSupportedDataTypes" name="parameters"/>
     </message>
 
-    <message name="getSupportedReturnTypesResponse">
-        <part element="pss:getSupportedReturnTypesResponse" name="parameters"/>
+    <message name="getSupportedDataTypesResponse">
+        <part element="pss:getSupportedDataTypesResponse" name="parameters"/>
     </message>
 
     <message name="getSupportedDbAcs">
@@ -292,9 +289,9 @@
             <fault message="pss:PsiscoreException" name="PsiscoreException"/>
         </operation>
 
-		<operation name="getSupportedReturnTypes">
-            <input message="pss:getSupportedReturnTypes"/>
-            <output message="pss:getSupportedReturnTypesResponse"/>
+		<operation name="getSupportedDataTypes">
+            <input message="pss:getSupportedDataTypes"/>
+            <output message="pss:getSupportedDataTypesResponse"/>
 			<fault message="pss:PsiscoreException" name="PsiscoreException"/>
         </operation>
 		
@@ -346,7 +343,7 @@
             </fault>
         </operation>
 		
-		 <operation name="getSupportedReturnTypes">
+		 <operation name="getSupportedDataTypes">
             <soap:operation soapAction=""/>
             <input>
                 <soap:body use="literal"/>
