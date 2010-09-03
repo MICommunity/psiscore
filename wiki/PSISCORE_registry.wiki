@@ -5,7 +5,7 @@
 The PSISCORE registry maintains a list of all available scoring servers and the scoring routines they provide. This allows new PSISCORE service providers to make their resource available to PSISCORE clients simply by registering it with the registry. The registry can be queried in an automatic fashion in the way described below, or it can be browsed online. 
 
 The PSISCORE registry can currently be found at
-*[http://psiscore.bioinf.mpi-inf.mpg.de/registry.php]*
+*[http://dasmi.de/psiscoreRegistry.php here]*. Please note that this is only a temporary URL, the registry will move to another place very soon.
 
 == Adding a new PSISCORE servers ==
 The current version of the PSISCORE registry is manually curated, therefore you can add a new PSISCORE server be mailing its address to hagen (at) mpi-inf.mpg.de. It will instantly be included in the registry and will from then on be available to all PSISCORE users.
@@ -18,7 +18,7 @@ PSISCORE servers provide a short description in the form of keywords for each sc
 A list of all scoring servers that are currently registered can be retrieved via the query 
 
 {{{
-http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?format=XML
+http://dasmi.de/psiscoreRegistry.php?format=XML
 }}}
 
 This will return a simple XML document with a description of each scoring method.
