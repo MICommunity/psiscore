@@ -19,7 +19,7 @@ package org.hupo.psi.mi.psiscore.ws.config;
  * Place-holder for the configuration. Initialized by Spring.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
- * @author Hagen Blankenburg
+ * @author hagen (mpi-inf,mpg)
  * @version $Id: PsicquicConfig.java 32 2009-01-19 11:35:16Z brunoaranda $
  */
 public class PsiscoreConfig {
