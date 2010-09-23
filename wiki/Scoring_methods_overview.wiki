@@ -1,8 +1,10 @@
 #summary Overview of scoring methods that have been introduced
 
-On this page we try to give an overview of the scoring methods that are known to us. Confidence scoring of interactions is a very diverse field and the list below is not intended to be comprehensive. However, if you know a method that is not included in our list, please add a reference or a link in the comment to this page and we will include it.
+Here we try to provide an overview of the confidence scoring methods that are known to us. As confidence scoring of interactions is a very diverse field (and many methods that can be used to assess the reliability of an interaction have not actually been developed for this purpose) the list below is not intended to be comprehensive. However, if you know a method that is not included in our list, please contact us or add a reference or a link in the comment to this page.
 
 = Scoring methods = 
+
+The following scoring methods are known to us. The ordering is arbitrary. 
 
 == MINT score ==
 The MINT score takes into account experimental evidence associated with the interaction detection method.
