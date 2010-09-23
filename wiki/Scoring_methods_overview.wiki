@@ -1,0 +1,42 @@
+#summary Overview of scoring methods that have been introduced
+
+On this page we try to give an overview of the scoring methods that are known to us. Confidence scoring of interactions is a very diverse field and the list below is not intended to be comprehensive. However, if you know a method that is not included in our list, please add a reference or a link in the comment to this page and we will include it.
+
+= Scoring methods = 
+
+== MINT score ==
+The MINT score takes into account experimental evidence associated with the interaction detection method.
+
+Range: 0-1
+
+Further information: [http://mint.bio.uniroma2.it/mint/doc/MINT-confidence-score.html http://mint.bio.uniroma2.it/mint/doc/MINT-confidence-score.html]
+
+Reference: [http://www.ncbi.nlm.nih.gov/pubmed/17135203 Chatr-aryamontri A et al. MINT: the Molecular INTeraction database. Nucleic Acids Res. 2007 Jan;35(Database issue):D572-4]
+  
+==MI score==
+The MI score is calculated based on the number of publications, the experimental detection methods and the interaction types that support a certain interaction.
+
+Range: 0-1
+
+Further information: [https://docs.google.com/Doc?docid=0AQ_p-HKWUjHoZGQ5cGNtcmhfMjJ2ZDdwcDhmag&hl=en https://docs.google.com/Doc?docid=0AQ_p-HKWUjHoZGQ5cGNtcmhfMjJ2ZDdwcDhmag&hl=en]
+
+==Braun et al.==
+Braun et al. propose an experimentally derived confidence score for binary protein interactions. 
+
+Reference: [http://www.nature.com/nmeth/journal/v6/n1/abs/nmeth.1281.html Braun et al. An experimentally derived confidence score for binary protein-protein interactions. Nature Methods 6, 91 - 97 (2008)]
+
+==iRefIndex scores==
+[http://irefindex.uio.no/wiki/iRefIndex iRefIndex] calculates three scores that are based on the publications (and their PubMed identifiers) that report an interaction. 
+
+*lpr score (lowest pmid re-use)* describes the lowest number of distinct interactions that any one PMID supporting the interaction is used to support. A value of one indicates that at least one of the PMIDs supporting this interaction has never been used to support any other interaction. This likely indicates that only one interaction was described by that reference and that the present interaction is not derived from high throughput methods.
+Range: 0-inf
+
+*hpr score (highest pmid re-use)* is the highest number of interactions that any one PMID  supporting the interaction in this row is used to support. High values indicate that a publication describes many other interactions as well, which is likely the case for high-throughput methods.
+Range: 0-inf
+
+*np score (number pmids)* is the total number of unique PMIDs used to support the interaction. 
+Range: 0-inf
+
+Further information: [http://irefindex.uio.no/wiki/README_iRefIndex_MITAB_6.0#Column_number:_15_.28confidence.29" http://irefindex.uio.no/wiki/README_iRefIndex_MITAB_6.0#Column_number:_15_.28confidence.29"]
+
+Reference: [Razick et al. iRefIndex: A consolidated protein interaction database with provenance http://www.biomedcentral.com/1471-2105/9/405/abstract]
