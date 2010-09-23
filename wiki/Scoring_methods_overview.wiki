@@ -41,4 +41,4 @@ Range: 0-inf
 
 Further information: [http://irefindex.uio.no/wiki/README_iRefIndex_MITAB_6.0#Column_number:_15_.28confidence.29" http://irefindex.uio.no/wiki/README_iRefIndex_MITAB_6.0#Column_number:_15_.28confidence.29"]
 
-Reference: [Razick et al. iRefIndex: A consolidated protein interaction database with provenance http://www.biomedcentral.com/1471-2105/9/405/abstract]
+Reference: ["Razick et al. iRefIndex: A consolidated protein interaction database with provenance" http://www.biomedcentral.com/1471-2105/9/405/abstract]
