@@ -1,6 +1,7 @@
 #summary Overview of scoring methods that have been introduced
 
-Here we try to provide an overview of the confidence scoring methods that are known to us. As confidence scoring of interactions is a very diverse field (and many methods that can be used to assess the reliability of an interaction have not actually been developed for this purpose) the list below is not intended to be comprehensive. However, if you know a method that is not included in our list, please contact us or add a reference or a link in the comment to this page.
+*Please note: This is NOT a comprehensive listing of all scoring methods that exists.*
+Rather, we try to provide an overview of the confidence scoring methods that are known to us. As confidence scoring of interactions is a very diverse field (and many methods that can be used to assess the reliability of an interaction have not originally been developed for this purpose) the list below is not comprehensive. If you know a method that is not included in our list, please contact us or add a reference or a link in the comment to this page.
 
 = Scoring methods = 
 
@@ -22,11 +23,6 @@ Range: 0-1
 
 Further information: [https://docs.google.com/Doc?docid=0AQ_p-HKWUjHoZGQ5cGNtcmhfMjJ2ZDdwcDhmag&hl=en https://docs.google.com/Doc?docid=0AQ_p-HKWUjHoZGQ5cGNtcmhfMjJ2ZDdwcDhmag&hl=en]
 
-==Braun et al.==
-Braun et al. propose an experimentally derived confidence score for binary protein interactions. 
-
-Reference: [http://www.nature.com/nmeth/journal/v6/n1/abs/nmeth.1281.html Braun et al. An experimentally derived confidence score for binary protein-protein interactions. Nature Methods 6, 91 - 97 (2008)]
-
 ==iRefIndex scores==
 [http://irefindex.uio.no/wiki/iRefIndex iRefIndex] calculates three scores based on the publications that provide evidence for an interaction. 
 
@@ -42,3 +38,8 @@ Range: 0-inf
 Further information: [http://irefindex.uio.no/wiki/README_iRefIndex_MITAB_6.0#Column_number:_15_.28confidence.29" http://irefindex.uio.no/wiki/README_iRefIndex_MITAB_6.0#Column_number:_15_.28confidence.29"]
 
 Reference: Razick et al. iRefIndex: A consolidated protein interaction database with provenance [http://www.biomedcentral.com/1471-2105/9/405/abstract]
+
+==Braun et al.==
+Braun et al. propose an experimentally derived confidence score for binary protein interactions. 
+
+Reference: [http://www.nature.com/nmeth/journal/v6/n1/abs/nmeth.1281.html Braun et al. An experimentally derived confidence score for binary protein-protein interactions. Nature Methods 6, 91 - 97 (2008)]
