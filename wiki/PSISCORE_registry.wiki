@@ -19,8 +19,8 @@ Through the `action` parameter you can define if you want to get a list of all a
 
 ||*value*||*description*||||*example*||
 ||STATUS||list all available PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=STATUS http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=STATUS]||
-||ACTIVE||list only active PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=ACTIVEhttp://psiscore.bioinf.mpi-inf.mpg.de/registry?action=ACTIVE]||
-||INACTIVE||list only inactive PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=INACTIVEhttp://psiscore.bioinf.mpi-inf.mpg.de/registry?action=INACTIVE]||
+||ACTIVE||list only active PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=ACTIVE http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=ACTIVE]||
+||INACTIVE||list only inactive PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=INACTIVE http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=INACTIVE]||
  
 
 == the `format` parameter ==
@@ -31,11 +31,6 @@ The `format` parameter defines the output format that the registry uses to prese
 ||XML||XML output, containing all the details of the graphical output||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=XML http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=XML]||
 ||TXT||very simple plain text output, containing server name and SOAP URL only||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=TXT http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=TXT]||
 
-{{{
-http://dasmi.de/psiscoreRegistry.php?format=XML
-}}}
-
-This will return a simple XML document with a description of each scoring method.
 
 == Adding a new PSISCORE servers ==
 At the moment, the PSISCORE registry is manually maintained, there is no way to automatically register your service. Therefore, please send the address of your service that is to be included in the registry to hagen (at) mpi-inf.mpg.de. It will be included in the registry as quick as possible. 
