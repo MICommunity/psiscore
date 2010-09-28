@@ -1,0 +1,11 @@
+#summary Description of the different versions of the Java reference implementation
+
+=Current version:=
+
+==0.9.5-SNAPSHOT==
+
+
+=Deprecated:=
+
+==0.9-SNAPSHOT==
+Initial release
