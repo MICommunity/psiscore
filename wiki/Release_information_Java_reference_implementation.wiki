@@ -1,8 +1,8 @@
-#summary Description of the different versions of the Java reference implementation
+#summary Description of the different versions of the Java client and server reference implementations
 
 =Current versions:=
 
-The current versions can be found in the [http://code.google.com/p/psiscore/downloads/list download section] of the PSISCORE website. 
+The current versions can be found in the [http://code.google.com/p/psiscore/downloads/list download section] of the PSISCORE website. The deprecated downloads are also still available, though we do not recommend their usage anymore.
 
 ==Web service==
 
