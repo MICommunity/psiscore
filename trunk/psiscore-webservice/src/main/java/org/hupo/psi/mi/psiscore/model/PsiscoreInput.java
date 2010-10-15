@@ -1,5 +1,6 @@
 package org.hupo.psi.mi.psiscore.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import org.hupo.psi.mi.psiscore.InvalidArgumentException;
@@ -8,9 +9,14 @@ import org.hupo.psi.mi.psiscore.util.PsiTools;
 
 import psidev.psi.mi.tab.model.BinaryInteraction;
 
-public class PsiscoreInput{
+public class PsiscoreInput implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4766563336687702037L;
 	private String psiscoreId = null;
 	private psidev.psi.mi.xml.model.EntrySet xmlEntySet = null;
+	//private psidev.psi.mi.xml254.jaxb.EntrySet xmlEntySet = null;
 	private Collection<BinaryInteraction> mitabInteractions = null;
 	private String primaryInput = null; 
 	
@@ -44,6 +50,7 @@ public class PsiscoreInput{
 	 * @return the psiscoreId
 	 */
 	public String getPsiscoreId() {
+		
 		return psiscoreId;
 	}
 
@@ -58,9 +65,16 @@ public class PsiscoreInput{
 
 	/**
 	 * @param xmlEntySet the xmlEntySet to set
+	 * @throws PsiscoreException 
 	 */
-	public void setXmlEntySet(psidev.psi.mi.xml.model.EntrySet xmlEntySet) {
+	public void setXmlEntySet(psidev.psi.mi.xml.model.EntrySet xmlEntySet){
 		this.xmlEntySet = xmlEntySet;
+		/*try {
+			this.xmlEntySet = PsiTools.getInstance().entrySetXmlModelToJaxb(xmlEntySet);
+		} catch (PsiscoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		
 	}
 
@@ -85,7 +99,14 @@ public class PsiscoreInput{
 	 * @return the xmlEntySet
 	 */
 	public psidev.psi.mi.xml.model.EntrySet getXmlEntySet() {
-		return xmlEntySet;
+		/*try {
+			return PsiTools.getInstance().entrySetJaxbToXmlModel(xmlEntySet);
+		} catch (PsiscoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;*/
+		return this.xmlEntySet;
 	}
 
 	/**

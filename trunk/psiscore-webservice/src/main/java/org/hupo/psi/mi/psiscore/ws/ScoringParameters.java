@@ -16,6 +16,7 @@
 package org.hupo.psi.mi.psiscore.ws;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -42,8 +43,9 @@ import psidev.psi.mi.xml.model.EntrySet;
  * @author hagen (mpi-inf,mpg) 
  * @version $Id$
  */
-public class ScoringParameters{
+public class ScoringParameters implements Serializable{
 	
+	private static final long serialVersionUID = 2864816240356379576L;
 	private PsiscoreInput inputData = null;
 	private Report scoringReport = new Report();
 	
@@ -80,7 +82,7 @@ public class ScoringParameters{
 			return inputData.getXmlEntySet();
 		}else if (inputData.mitabUsed() ){
 			convertedMitab = true;
-			this.inputData.setXmlEntySet(PsiTools.getEntrySetFromBinaryInteractions(inputData.getMitabInteractions()));
+			this.inputData.setXmlEntySet(PsiTools.getInstance().getEntrySetFromBinaryInteractions(inputData.getMitabInteractions()));
 			return inputData.getXmlEntySet();
 		}else{
 			throw new PsiscoreException("No valid input detected.", new PsiscoreFault());

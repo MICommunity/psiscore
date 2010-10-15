@@ -1,5 +1,7 @@
 package org.hupo.psi.mi.psiscore;
 
+import org.hupo.psi.mi.psiscore.ws.config.PsiscoreServerProperties;
+
 import psidev.psi.mi.xml.model.Confidence;
 import psidev.psi.mi.xml.model.Names;
 import psidev.psi.mi.xml.model.Unit;
