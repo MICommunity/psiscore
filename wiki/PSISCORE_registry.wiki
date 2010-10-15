@@ -31,6 +31,7 @@ The `format` parameter defines the output format that the registry uses to prese
 ||XML||XML output, containing all the details of the graphical output||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=XML]||
 ||TXT||very simple plain text output, containing server name and SOAP URL only||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=TXT]||
 
+
 == the `name` parameter ==
 The `name` parameter can be used to select a particular scoring server. If no scoring server with this name exists, the registry will not show any servers. 
 
@@ -38,6 +39,13 @@ The `name` parameter can be used to select a particular scoring server. If no sc
 ||none||all scoring servers will be listed||[http://psiscore.bioinf.mpi-inf.mpg.de/registry]||
 ||name of a scoring server, e.g., "MINT"||only the scoring server with the same name will be listed ||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=MINT]||
 
+
+== Examples ==
+Get all active scoring servers in XML format
+[http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?format=xml&action=active]
+
+Get an HTML page describing the MINT scoring server
+[http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?name=mint]
 
 == Adding a new PSISCORE servers ==
 At the moment, the PSISCORE registry is manually maintained, there is no way to automatically register your service. Therefore, please send the address of your service that is to be included in the registry to hagen (at) mpi-inf.mpg.de. It will be included in the registry as quick as possible. 
