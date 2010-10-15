@@ -5,7 +5,7 @@ Rather, we try to provide an overview of the confidence scoring methods that are
 
 = Scoring methods = 
 
-The order of the following list is completely arbitrary and does not provide information on what method is "better" than the other. As a matter of fact, we believe that only a mixture of scoring methods can really provide information on the reliability of a particular interactions, as each scoring method is based on different biological aspects. 
+The order of the following list is completely arbitrary and does not provide information if a method is "better" than another. Instead, we believe that only a mixture of scoring methods can really provide information on the reliability of a particular interactions, as each scoring method is based on different biological aspects. 
 
 == MINT score ==
 The MINT score takes into account experimental evidence associated with the interaction detection method.
@@ -15,13 +15,9 @@ Range: 0-1
 Further information: [http://mint.bio.uniroma2.it/mint/doc/MINT-confidence-score.html http://mint.bio.uniroma2.it/mint/doc/MINT-confidence-score.html]
 
 Reference: [http://www.ncbi.nlm.nih.gov/pubmed/17135203 Chatr-aryamontri A et al. MINT: the Molecular INTeraction database. Nucleic Acids Res. 2007 Jan;35(Database issue):D572-4]
+
+*PSISCORE server: [http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=mint]*
   
-==MI score==
-The MI score is calculated based on the number of publications, the experimental detection methods and the interaction types that support a certain interaction.
-
-Range: 0-1
-
-Further information: [https://docs.google.com/Doc?docid=0AQ_p-HKWUjHoZGQ5cGNtcmhfMjJ2ZDdwcDhmag&hl=en https://docs.google.com/Doc?docid=0AQ_p-HKWUjHoZGQ5cGNtcmhfMjJ2ZDdwcDhmag&hl=en]
 
 ==iRefIndex scores==
 [http://irefindex.uio.no/wiki/iRefIndex iRefIndex] calculates three scores based on the publications that provide evidence for an interaction. 
@@ -38,6 +34,17 @@ Range: 0-inf
 Further information: [http://irefindex.uio.no/wiki/README_iRefIndex_MITAB_6.0#Column_number:_15_.28confidence.29" http://irefindex.uio.no/wiki/README_iRefIndex_MITAB_6.0#Column_number:_15_.28confidence.29"]
 
 Reference: Razick et al. iRefIndex: A consolidated protein interaction database with provenance [http://www.biomedcentral.com/1471-2105/9/405/abstract]
+
+*PSISCORE server: [http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=irefindex]*
+
+==MI score==
+The MI score is calculated based on the number of publications, the experimental detection methods and the interaction types that support a certain interaction.
+
+Range: 0-1
+
+Further information: [https://docs.google.com/Doc?docid=0AQ_p-HKWUjHoZGQ5cGNtcmhfMjJ2ZDdwcDhmag&hl=en https://docs.google.com/Doc?docid=0AQ_p-HKWUjHoZGQ5cGNtcmhfMjJ2ZDdwcDhmag&hl=en]
+
+*PSISCORE server: currently under development*
 
 ==Braun et al.==
 Braun et al. propose an experimentally derived confidence score for binary protein interactions. 
