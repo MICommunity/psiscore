@@ -13,12 +13,12 @@
 
     <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 
-    <context:property-placeholder location="classpath:/META-INF/psicquic.properties"/> 
+    <context:property-placeholder location="classpath:/psiscoreServer.properties"/> 
     
     <bean name="psiscoreConfig" class="org.hupo.psi.mi.psiscore.ws.config.PsiscoreConfig">
-        <property name="groupId" value="${psicquic.groupId}"/>
-        <property name="artifactId" value="${psicquic.artifactId}"/>
-        <property name="version" value="${psicquic.version}"/>
+        <property name="groupId" value="${psiscore.groupId}"/>
+        <property name="artifactId" value="${psiscore.artifactId}"/>
+        <property name="version" value="${psiscore.version}"/>
     </bean>
    
 </beans>
