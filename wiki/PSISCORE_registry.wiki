@@ -41,14 +41,16 @@ The `name` parameter can be used to select a particular scoring server. If no sc
 
 
 == Examples ==
-Get all active scoring servers in XML format
+Get all active scoring servers in XML format:
 [http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?format=xml&action=active]
 
-Get an HTML page describing the MINT scoring server
+Get an HTML page describing the MINT scoring server:
 [http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?name=mint]
+
 
 == Adding a new PSISCORE servers ==
 At the moment, the PSISCORE registry is manually maintained, there is no way to automatically register your service. Therefore, please send the address of your service that is to be included in the registry to hagen (at) mpi-inf.mpg.de. It will be included in the registry as quick as possible. 
+
 
 == Description of scoring methods ==
 PSISCORE servers provide a short description in the form of keywords for each scoring method they offer. These keywords are intended for automatic classification or selection of certain methods, but they do not provide the user with a comprehensive description of the algorithm details. Therefore, each scoring algorithm should also be defined in the Molecular Interactions controlled vocabulary (MI CV, http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI). As the confidence section of the MI CV is still under development, this description is currently also maintained by the PSISCORE registry. 
