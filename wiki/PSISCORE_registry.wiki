@@ -12,7 +12,7 @@ If you open the [http://psiscore.bioinf.mpi-inf.mpg.de/registry PSISCORE registr
 
 The full URL of the registry with all possible parameters can be seen below
 
-`http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=${ACTION}&format=${FORMAT}`
+`http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=${ACTION}&format=${FORMAT}&name=${NAME}`
 
 == the `action` parameter ==
 Through the `action` parameter you can define if you want to get a list of all available scoring server or if you want to list only those that are active/inactive.
