@@ -1,11 +1,39 @@
 #summary Description of the different versions of the Java reference implementation
 
-=Current version:=
+=Current versions:=
 
-==0.9.5-SNAPSHOT==
+The current versions can be found in the [http://code.google.com/p/psiscore/downloads/list download section] of the PSISCORE website. 
 
+==Web service==
+
+===0.9.7-SNAPSHOT===
+  * full support for scoring PSI-MI XML2.5 files (temporary serialization on the server side)
+  * includes exemplary MITAB scoring calculator
+  
+==Client==
+
+===0.9.7-SNAPSHOT===
+  * storage of input files in temporary directory
+  * client configuration via external properties file
 
 =Deprecated:=
 
-==0.9-SNAPSHOT==
-Initial release
+==Web service==
+
+===0.9.6-SNAPSHOT===
+  * storage of input files in temporary directory
+  * server configuration via external properties file
+
+===0.9.5-SNAPSHOT===
+  * several bug fixes
+
+===0.9-SNAPSHOT===
+  * initial proof-of-concept release
+  * scoring of MITAB files
+
+==Client==
+
+===0.9.5-SNAPSHOT===
+
+===0.9-SNAPSHOT===
+  * initial proof-of-concept release
