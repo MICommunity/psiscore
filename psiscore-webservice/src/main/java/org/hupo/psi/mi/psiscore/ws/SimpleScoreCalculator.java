@@ -57,9 +57,10 @@ public abstract class SimpleScoreCalculator extends AbstractScoreCalculator{
 	 */
     public void run() {
     	try {
-    		List<String> report = calculateScores(getScoringParameters().getEntrySet());
-    		getScoringParameters().getScoringReport().getResults().addAll(report);
-			if (getScoringParameters().scoresAdded()){
+    		List<String> report = calculateScores(scoringParameters.getEntrySet());
+    		
+    		scoringParameters.getScoringReport().getResults().addAll(report);
+			if (scoringParameters.scoresAdded()){
 				triggerScoresAdded();
 			}else{
 				triggerNoScoresAdded();
@@ -88,12 +89,15 @@ public abstract class SimpleScoreCalculator extends AbstractScoreCalculator{
     	int totalConfidences = 0;
     	// go over all entries
 		Iterator<Entry> it = entrySet.getEntries().iterator();
+		scoringParameters.setScoresAdded(false);
 		while (it.hasNext()){
 			Entry entry = it.next();
 			// and go over all interactions in that entry
 			Collection<Interaction> interactions = entry.getInteractions();
 			for (Iterator<Interaction> interactionIt = interactions.iterator(); interactionIt.hasNext();){
+				
 				Interaction interaction = interactionIt.next();
+
 				Collection<Confidence> confidences = null;
 				// and request the scores for that interaction
 				try{
@@ -101,15 +105,19 @@ public abstract class SimpleScoreCalculator extends AbstractScoreCalculator{
 				}catch (ScoringException e){
 					report.add(e.getMessage());
 				}
-				if (confidences == null || confidences.size() == 0){
+				//confidences = null;
+				if(confidences == null || confidences.size() == 0){
 					unscored++;
 				}else if (confidences.size() > 0){
-					getScoringParameters().setScoresAdded(true);
+					scoringParameters.setScoresAdded(true);
 					scored++;
+					totalConfidences += confidences.size();
+					interaction.getConfidences().addAll(confidences);
+					
 				}
-				totalConfidences += confidences.size();
-				interaction.getConfidences().addAll(confidences);
+
 			} 
+			
 		}
 		report.add(totalConfidences + " confidences scores added for " + scored +  " interactions, nothing added for " + unscored + " interactions" );
         return report;

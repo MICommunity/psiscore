@@ -15,20 +15,29 @@ package org.hupo.psi.mi.psiscore.ws;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
 
 import org.hupo.psi.mi.psiscore.*;
 import org.hupo.psi.mi.psiscore.model.PsiscoreInput;
 import org.hupo.psi.mi.psiscore.util.PsiTools;
 import org.hupo.psi.mi.psiscore.config.Constants;
+import org.hupo.psi.mi.psiscore.ws.config.PsiscoreServerProperties;
 import org.hupo.psi.mi.psiscore.ws.config.PsiscoreConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import psidev.psi.mi.tab.model.BinaryInteraction;
+import psidev.psi.mi.tab.model.Confidence;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -45,31 +54,32 @@ import java.util.concurrent.Future;
 @Controller
 public class DefaultPsiscoreService implements PsiscoreService {
 
-	// in this array you specify all the calculators the server will later manage.
-	// for this, an instance of each class will be created to handle the associated
-	// requests
-	// TODO move into a nicer place such as a config file
-    private String[] calculatorClasses = {
-    		"org.hupo.psi.mi.psiscore.ws.ExampleScoreCalculator",
-    		"org.hupo.psi.mi.psiscore.ws.YetAnotherExampleScoreCalculator"
-    		};
 	
-    private static final int THREAD_POOL_SIZE = 1; // how many scoring threads can run in parallel
-	private static final int NO_POLLING_NEEDED = 1; // 1 second = come back instantly
-	private static final int POLLING_INTERVAL = 5; // suggested polling interval for server, seconds
+	private Properties properties = PsiscoreServerProperties.getInstance().getProperties();
+
+	// stuff to be read from the properties file
+	private String[] calculatorClasses = null;
+    private int threadPoolSize ; 
+	private int pollingIntervalNoWaiting = Constants.pollingIntervalNoWaiting; 
+	private int pollingInterval ; 
+	private int numberOfRunningJobsBeforeCleanup;
+	private int serverBreakIfOverloaded;
+	private int maxRunningJobs;
 	
-	
-	
+    public int count = 0;
+    
     @Autowired
     private PsiscoreConfig config;
     
     private Set<AbstractScoreCalculator> calculators = null;
-    private HashMap<String, Report> allReports = null;
-    private HashMap<String, PsiscoreInput> allInputData = null;
+    
     private ExecutorService threadPool = null;
     private Map<String, Set<Future>> threadFutures = null;
-    private static Set<String> uniqueIds = null;;
-    private int activeThreads = 0;
+    private Set<String> uniqueIds = null;
+    private Set<String> finishedJobs = null;
+    private Set<String> runningJobs = null;
+
+    private long lastTimestamp = 0;
 
     /**
      *  Init all global variables
@@ -77,6 +87,18 @@ public class DefaultPsiscoreService implements PsiscoreService {
      */
     public DefaultPsiscoreService() throws PsiscoreException{
     	super();
+    	try {
+	    	threadPoolSize = Integer.parseInt(properties.getProperty("threadPoolSize"));
+	    	pollingInterval = Integer.parseInt(properties.getProperty("pollingInterval"));
+	    	numberOfRunningJobsBeforeCleanup = Integer.parseInt(properties.getProperty("numberOfRunningJobsBeforeCleanup"));
+	    	String tempCalculatorClasses = properties.getProperty("scoreCalculatorClasses");
+	    	maxRunningJobs = Integer.parseInt(properties.getProperty("maxRunningJobs"));
+	    	serverBreakIfOverloaded = Integer.parseInt(properties.getProperty("serverBreakIfOverloaded"));
+	    	
+	    	calculatorClasses = tempCalculatorClasses.split(";");
+    	}catch(Exception e){
+    		throw new PsiscoreException("Error accessing crucial parameters from proteries file", new PsiscoreFault(), e);
+    	}
     	
     	calculators = new HashSet<AbstractScoreCalculator>();
     	
@@ -93,10 +115,14 @@ public class DefaultPsiscoreService implements PsiscoreService {
     			throw new PsiscoreException("Cannot instantiate scoring calculator " + calculatorClasses[i], new PsiscoreFault(), e);
     		}
     	}
-    	initDataStorage(); // where to kept the incoming data
+    	
     	initThreadPool(); // how to manage scoring
+    	// request temp file such that potentially long running directory
+    	// clearing can already be started
+    	TempFileDataStorage.getInstance();
    	
     }
+    
     
     
 
@@ -104,24 +130,42 @@ public class DefaultPsiscoreService implements PsiscoreService {
      * Request the server to score the interactions specified in the data section of the request with the algorithms provided 
      */
     public JobResponse submitJob( List<AlgorithmDescriptor> algorithmDescriptions, ResultSet inputData, String returnFormat) throws PsiscoreException, InvalidArgumentException{
-    	//prepare the user response that will contain the job id and the polling interval
-		JobResponse response = new JobResponse();
+    	// if we have too many active jobs check if some of them
+    	// have already finished such that we can get rid of their
+    	// futures objects
+		cleanUpRunningJobs();
+    	if (runningJobs.size() > numberOfRunningJobsBeforeCleanup){
+    		System.out.println("have: " + runningJobs.size() + " jobs, total ids: " + uniqueIds.size() );
+    		try {
+    			Thread.sleep(serverBreakIfOverloaded);
+    		} catch (InterruptedException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+    	}
+    	
+    	if (runningJobs.size() > maxRunningJobs){
+    		throw new PsiscoreException("More than " + maxRunningJobs + " active jobs are on the server. Will not accept now jobs, please come back later.", new PsiscoreFault());
+    	}
+    	
 		String jobId = getUniqueId();
-		response.setJobId(jobId);
-		
-    	// check which calculators we actually need to fulfill all requests	 within the algorithm descriptions	
+
+		// check which calculators we actually need to fulfill all requests	 within the algorithm descriptions	
 		Map<Class, List<AlgorithmDescriptor>> requiredCalculators =  getRequiredCalculators(algorithmDescriptions);
 		// get the input
-		PsiscoreInput input = PsiTools.getPsiscoreInput(inputData);
+		PsiscoreInput input = PsiTools.getInstance().getPsiscoreInput(inputData);
+		
 		input.setPsiscoreId(jobId);
 		// and store it to later compare with the scoring results
-		storeInputData(jobId, input);
-		storeReport(jobId, new Report());
-		
+		TempFileDataStorage.getInstance().storeInputData(jobId, input);
+		input = null;
+		Report rep = new Report();
+		TempFileDataStorage.getInstance().storeReport(jobId, rep);
+		rep = null;
 		// start a scoring thread for each calculator
 		for (Iterator<Class> it = requiredCalculators.keySet().iterator(); it.hasNext();){
 			Class calculatorClass = it.next();
-			
+			input = TempFileDataStorage.getInstance().getInputData(jobId);
 			ScoringParameters parameters = new ScoringParameters();
 			parameters.setAlgorithmDescriptions(requiredCalculators.get(calculatorClass));
 			parameters.setInputData(input);
@@ -135,17 +179,24 @@ public class DefaultPsiscoreService implements PsiscoreService {
 				throw new PsiscoreException("Cannot instantiate scoring calculator ", new PsiscoreFault(), e);
 			} catch (IllegalAccessException e) {
 				throw new PsiscoreException("Cannot instantiate scoring calculator ", new PsiscoreFault(), e);
+			}finally{
+				calculatorClass = null;
 			}
-			// at the listners and submit the job to the pool , where it will be started
+			// add the listners and submit the job to the pool , where it will be started
 			ScoringListener listener = new PsiscoreServiceListener();
 			calculator.addScoringListener(listener);
 			calculator.setName(jobId);
 			calculator.setScoringParameters(parameters);
 			submitThreadToPool(calculator);
 		}
-		// to tough part is estimating the correct polling interval for the server 
+		// what we"ll tell the client about the job
+		JobResponse response = new JobResponse();
+		response.setJobId(jobId);
+
 		response.setPollingInterval(estimatePollingInterval(input, algorithmDescriptions));
 		
+		input = null;
+		requiredCalculators = null;
 		return response;
 	}
     
@@ -155,63 +206,37 @@ public class DefaultPsiscoreService implements PsiscoreService {
 	 * @param entrySet
 	 * @return polling interval in seconds
 	 */
-	private int estimatePollingInterval(PsiscoreInput input, List<AlgorithmDescriptor> algorithmDescriptions){
+	private synchronized int estimatePollingInterval(PsiscoreInput input, List<AlgorithmDescriptor> algorithmDescriptions){
 		//todo replace with more realistic estimation, e.g. based on entrySet legnth and number of requested algorithms 
-		if (this.activeThreads >= THREAD_POOL_SIZE){
-			return POLLING_INTERVAL;
+		if (runningJobs.size() >= threadPoolSize){
+			return pollingInterval;
 		}else{
-			return NO_POLLING_NEEDED;
+			return pollingIntervalNoWaiting;
 		}
 	}
     
-	
-    /**
-     * Initialize the data storage. If data should be kept in a database, this is
-     * where the conenction could be made or if data is kept in memory, this is 
-     * where the objects could be created.
-     */
-    private void initDataStorage(){
-    	this.allReports = new HashMap<String, Report>();
-    	this.allInputData = new HashMap<String, PsiscoreInput>();
-    }
-    
-
-    /**
-     * Store the input data in a database, in local memory, etc ...
-     * @param jobId
-     * @param input
-     */
-    private void storeInputData(String jobId, PsiscoreInput input){
-    	allInputData.put(jobId, input);
-    }
-    
-    
-    private void storeReport(String jobId, Report report){
-    	allReports.put(jobId, report);
-    	
-    }
-    
-    
-
-    /**
-     * Get the input data from the storage (DB, memory etc).
-     * @param jobId
-     * @return
-     * @throws InvalidArgumentException
-     */
-    private PsiscoreInput getInteractionData(String jobId) throws InvalidArgumentException{
-    	if (!this.allInputData.containsKey(jobId)){
-			throw new InvalidArgumentException("There is no job (input) with this id", new PsiscoreFault());
+	public void cleanUpRunningJobs(){
+		//System.out.print("Running before: " + runningJobs.size());
+		try{
+			Set<String> runningCopy = new HashSet<String>(runningJobs);
+			for (String jobId : runningCopy){
+				try {
+					getJobStatus(jobId);
+				} catch (PsiscoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				jobId = null;
+			}
+			runningCopy = null;
+		}catch(ConcurrentModificationException e){
+			System.out.println("Concurrent modification, better luck next time");
 		}
-		return this.allInputData.get(jobId);
-    }
-    
-    private Report getReport(String jobId)  throws InvalidArgumentException{
-    	if (!this.allReports.containsKey(jobId)){
-    		throw new InvalidArgumentException("There are no reports associated with this id", new PsiscoreFault());
-    	}
-    	return this.allReports.get(jobId);
-    }
+		//System.out.println(", after: " + runningJobs.size() + ", total ids: " + uniqueIds.size() );
+	}
     
     
 	/**
@@ -241,7 +266,6 @@ public class DefaultPsiscoreService implements PsiscoreService {
      */
     public List<String> getSupportedDataTypes() throws PsiscoreException {
     	List<String> supportedReturnTypes = new ArrayList<String>();
-    	
     	supportedReturnTypes.add(Constants.RETURN_TYPE_MITAB25);
     	supportedReturnTypes.add(Constants.RETURN_TYPE_XML25);
     	return supportedReturnTypes;
@@ -259,11 +283,19 @@ public class DefaultPsiscoreService implements PsiscoreService {
     	
     	for (Iterator<AlgorithmDescriptor> algIt = requestedAlgorithms.iterator(); algIt.hasNext();){
     		AlgorithmDescriptor requestedAlgorithm = algIt.next();
+    		if (requestedAlgorithm == null){
+    			throw new PsiscoreException("There is a problem with the algo descriptions " , new PsiscoreFault());
+    		}
+    		
     		for (Iterator<AbstractScoreCalculator> calcIt = calculators.iterator(); calcIt.hasNext();){
 	    		AbstractScoreCalculator calculator = calcIt.next();
 	    		List<AlgorithmDescriptor> calculatorAlgorithms = calculator.getSupportedScoringMethods();
 	    		for (Iterator<AlgorithmDescriptor> algIt2 = calculatorAlgorithms.iterator(); algIt2.hasNext();){
 	    			AlgorithmDescriptor calculatorAlgorithm = algIt2.next();
+	    			
+	    			if (calculatorAlgorithm == null){
+	    				throw new PsiscoreException("There is a problem with the algo descriptions", new PsiscoreFault());
+	    			}
 	    			if (calculatorAlgorithm.getId() == null || requestedAlgorithm.getId() == null){
 	    				throw new PsiscoreException("There is a problem with the algo descriptions", new PsiscoreFault());
 	    			}
@@ -277,9 +309,13 @@ public class DefaultPsiscoreService implements PsiscoreService {
 	    				requestedAlgorithmsCalculator.add(requestedAlgorithm);
 	    				requiredCalculators.put(calculator.getClass(), requestedAlgorithmsCalculator);
 	    			}
+	    			calculatorAlgorithm = null;
 	    		}
+	    		calculatorAlgorithms = null;
     		}
+    		requestedAlgorithm = null;
     	}
+    	requestedAlgorithms = null;
     	return requiredCalculators;
     }
     
@@ -292,9 +328,9 @@ public class DefaultPsiscoreService implements PsiscoreService {
 		QueryResponse response = new QueryResponse();
 		
 		if (getJobStatus(jobId).equalsIgnoreCase(Constants.MESSAGE_JOB_FINISHED)){
-			PsiscoreInput input = getInteractionData(jobId);
-			response.setResultSet(PsiTools.getResultSet(input));
-			response.setReport(getReport(jobId));
+			PsiscoreInput input = TempFileDataStorage.getInstance().getInputData(jobId);
+			response.setResultSet(PsiTools.getInstance().getResultSet(input));
+			response.setReport(TempFileDataStorage.getInstance().getReport(jobId));
 		
 		}else{
 			throw new JobStillRunningException("The job has not yet finished please try again later", new PsiscoreFault());
@@ -306,12 +342,15 @@ public class DefaultPsiscoreService implements PsiscoreService {
 	/**
 	 * Get the status of the scoring job. Will thrown an exception if the jobId does not exist.
 	 */
-	public String getJobStatus(String jobID) throws PsiscoreException, InvalidArgumentException {
+	public synchronized String getJobStatus(String jobId) throws PsiscoreException, InvalidArgumentException {
+		if (finishedJobs.contains(jobId)){
+			return Constants.MESSAGE_JOB_FINISHED;
+		}
 		String jobStatus = null;
-		Set<Future> futures = this.threadFutures.get(jobID);
+		Set<Future> futures = this.threadFutures.get(jobId);
 		
 		if (futures == null){
-			throw new InvalidArgumentException("The server does not have any active scoring jobs", new PsiscoreFault());
+			throw new InvalidArgumentException("The server does not have any active scoring jobs for this id.", new PsiscoreFault());
 		}
 
 		// check all futures to see if the individual scoring job have finished
@@ -326,16 +365,33 @@ public class DefaultPsiscoreService implements PsiscoreService {
 				errorOccured = true;
 			}
 		}
+		
 		if (allDone & !errorOccured){
+			// remove the futures of this job and add it to the set of finished jobs
+			this.threadFutures.remove(jobId);
+				
+			removeRunningJob(jobId);
+			finishedJobs.add(jobId);
 			jobStatus = Constants.MESSAGE_JOB_FINISHED;
-		}else if (allDone & errorOccured){
+		}else if (errorOccured){
 			jobStatus = Constants.MESSAGE_JOB_ERROR;
-		}
-		else{
+		}else{
 			jobStatus = Constants.MESSAGE_JOB_RUNNING;
 		}
-		
+		futures = null;
 		return jobStatus;
+	}
+	
+		private synchronized void removeRunningJob(String jobId){
+			runningJobs.remove(jobId);
+		}
+	
+	public void removeJob(String id){
+		if (uniqueIds.contains(id)){
+    		uniqueIds.remove(id);
+    	}
+		TempFileDataStorage.getInstance().deleteStoredInputData(id);
+		
 	}
 
 	
@@ -350,6 +406,7 @@ public class DefaultPsiscoreService implements PsiscoreService {
     	if (uniqueIds == null){
     		 uniqueIds= new HashSet<String>();
     	}
+    	random = null;
     	if (uniqueIds.contains(token)){
     		return getUniqueId();
     	}else{
@@ -362,7 +419,7 @@ public class DefaultPsiscoreService implements PsiscoreService {
 	 /**
      * Clean up the mess
      */
-    public void finalize(){
+    protected void finalize(){
     	this.threadPool.shutdownNow();
     	
     	if (calculators != null){
@@ -372,6 +429,14 @@ public class DefaultPsiscoreService implements PsiscoreService {
     		}
     	}
     	calculators = null;
+    	
+    	if (uniqueIds.size() > 0){
+    		Iterator<String> it = uniqueIds.iterator();
+    		while (it.hasNext()){
+    			removeJob(it.next());
+    		}
+    	}
+    	
     	try {
 			super.finalize();
 		} catch (Throwable e) {
@@ -387,9 +452,12 @@ public class DefaultPsiscoreService implements PsiscoreService {
 		if (this.threadPool != null){
 			this.threadPool.shutdownNow();
 		}
-		this.threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+		this.threadPool = Executors.newFixedThreadPool(threadPoolSize);
 		//this.threadPool = Executors.newSingleThreadExecutor();
 		this.threadFutures = new HashMap<String, Set<Future>>();
+		this.uniqueIds = new HashSet<String>();
+		this.finishedJobs = new HashSet<String>();
+		this.runningJobs = new HashSet<String>();
 	}
     
 	
@@ -406,10 +474,45 @@ public class DefaultPsiscoreService implements PsiscoreService {
 			futures = this.threadFutures.get(thread.getName());
 		}
 		futures.add(future);
+		this.runningJobs.add(thread.getName());
 		this.threadFutures.put(thread.getName(), futures);
-		this.activeThreads++;
 	}
 	
+	private void threadFinished(){
+		cleanUpRunningJobs();
+	}
+	
+	
+	private synchronized void addScores(ScoringParameters parameters) throws PsiscoreException{
+		PsiscoreInput inputData = null;
+		Report report = null; 
+		
+		try {
+			inputData = TempFileDataStorage.getInstance().getInputData(parameters.getJobID());
+			report = TempFileDataStorage.getInstance().getReport(parameters.getJobID());
+		} catch (InvalidArgumentException e) {
+			e.printStackTrace();
+			Report rep = parameters.getScoringReport();
+			rep.getResults().add("IMPORTANT: Parts of the scoring results have potentially been deleted from the server. Run the scoring job again!");
+			TempFileDataStorage.getInstance().storeReport(parameters.getJobID(), rep);
+			TempFileDataStorage.getInstance().storeInputData(parameters.getJobID(), parameters.getInputData());
+			//throw new PsiscoreException("The job with this ID cannot be found on the server anymore.", new PsiscoreFault(), e);
+			
+		}
+
+		// add and save the new report and data
+		report.getResults().addAll(parameters.getScoringReport().getResults());
+		TempFileDataStorage.getInstance().storeReport(parameters.getJobID(), report);
+
+		PsiTools.getInstance().addConfidencesToPsiscoreInput(inputData, parameters.getInputData());
+
+		TempFileDataStorage.getInstance().storeInputData(parameters.getJobID(), inputData);
+		
+		inputData = null;
+		report = null;
+		parameters = null;
+		threadFinished();
+	}
 
 	/**
 	 * Listener class handling the outcome of scoring jobs
@@ -418,25 +521,36 @@ public class DefaultPsiscoreService implements PsiscoreService {
 	 */
 	private class PsiscoreServiceListener implements ScoringListener{
 
+		
 		/**
 		 * not yet supported
 		 */
 		public synchronized void comeBackLater() {
-			activeThreads--;
+			//activeThreads--;
+			threadFinished();
 		}
 
 		/**
 		 * do something meaningful with the error that happened
 		 */
 		public synchronized void errorOccured(ScoringParameters parameters){
-			activeThreads--;
+			//activeThreads--;
+			
 			Report report = null; 
 			try {
-				report = getReport(parameters.getJobID());
-				report.getResults().addAll(parameters.getScoringReport().getResults());
+				report = TempFileDataStorage.getInstance().getReport(parameters.getJobID());
+				
 			} catch (InvalidArgumentException e) {
-				e.printStackTrace();
+				Report rep = parameters.getScoringReport();
+				rep.getResults().add("IMPORTANT: Parts of the scoring results have potentially been deleted from the server. Run the scoring job again!");
+				TempFileDataStorage.getInstance().storeReport(parameters.getJobID(), rep);
+				
 			}
+			report.getResults().addAll(parameters.getScoringReport().getResults());
+			TempFileDataStorage.getInstance().storeReport(parameters.getJobID(), report);
+			
+			parameters = null;
+			threadFinished();
 
 		}
 
@@ -444,14 +558,24 @@ public class DefaultPsiscoreService implements PsiscoreService {
 		 * no scores have been found
 		 */
 		public synchronized void noScoresAdded(ScoringParameters parameters) throws PsiscoreException{
-			activeThreads--;
+			//activeThreads--;
 			Report report = null; 
+			
 			try {
-				report = getReport(parameters.getJobID());
+				report = TempFileDataStorage.getInstance().getReport(parameters.getJobID());
 			} catch (InvalidArgumentException e) {
-				throw new PsiscoreException("The job with this ID cannot be found on the server anymore.", new PsiscoreFault());
+				Report rep = parameters.getScoringReport();
+				rep.getResults().add("IMPORTANT: Parts of the scoring results have potentially been deleted from the server. Run the scoring job again!");
+				TempFileDataStorage.getInstance().storeReport(parameters.getJobID(), rep);
+				TempFileDataStorage.getInstance().storeInputData(parameters.getJobID(), parameters.getInputData());
+				//throw new PsiscoreException("The job with this ID cannot be found on the server anymore.", new PsiscoreFault(), e);
 			}
+			// add and save the new report
 			report.getResults().addAll(parameters.getScoringReport().getResults());
+			TempFileDataStorage.getInstance().storeReport(parameters.getJobID(), report);
+			
+			parameters = null;
+			threadFinished();
 		}
 
 		
@@ -461,20 +585,8 @@ public class DefaultPsiscoreService implements PsiscoreService {
 		 * @throws InvalidArgumentException 
 		 */
 		public synchronized void scoresAdded(ScoringParameters parameters) throws PsiscoreException{
-			activeThreads--;
-			PsiscoreInput inputData = null;
-			Report report = null; 
-			try {
-				inputData = getInteractionData(parameters.getJobID());
-				report = getReport(parameters.getJobID());
-			} catch (InvalidArgumentException e) {
-				throw new PsiscoreException("The job with this ID cannot be found on the server anymore.", new PsiscoreFault());
-				
-			}
-			report.getResults().addAll(parameters.getScoringReport().getResults());
-			PsiTools.addConfidencesToPsiscoreInput(inputData, parameters.getInputData());
-			storeInputData(parameters.getJobID(), inputData);
-
+			addScores(parameters);
+			
 		}
 	}
 }

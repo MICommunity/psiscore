@@ -40,7 +40,7 @@ import org.hupo.psi.mi.psiscore.PsiscoreException;
  */
 public abstract class AbstractScoreCalculator extends Thread{
 
-	 ScoringParameters scoringParameters = null;
+	 protected ScoringParameters scoringParameters = null;
 	 Set<ScoringListener> scoringListeners = null;
 	
 	/**
@@ -125,7 +125,7 @@ public abstract class AbstractScoreCalculator extends Thread{
 	        Iterator<ScoringListener> iter = scoringListeners.iterator();
 	        while (iter.hasNext()){
 	            ScoringListener li = iter.next();
-	            li.scoresAdded(getScoringParameters());
+	            li.scoresAdded(scoringParameters);
 	        }
 	    }
 	    
@@ -139,7 +139,7 @@ public abstract class AbstractScoreCalculator extends Thread{
 	        Iterator<ScoringListener> iter = scoringListeners.iterator();
 	        while (iter.hasNext()){
 	            ScoringListener li = iter.next();
-	            li.noScoresAdded(getScoringParameters());
+	            li.noScoresAdded(scoringParameters);
 	        }
 	    }
 	    
@@ -152,7 +152,7 @@ public abstract class AbstractScoreCalculator extends Thread{
 	        Iterator<ScoringListener> iter = scoringListeners.iterator();
 	        while (iter.hasNext()){
 	            ScoringListener li = iter.next();
-	            li.errorOccured(getScoringParameters());
+	            li.errorOccured(scoringParameters);
 	        }
 	    }
 
