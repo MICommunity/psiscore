@@ -9,6 +9,7 @@ The current versions can be found in the [http://code.google.com/p/psiscore/down
 ===0.9.7-SNAPSHOT===
   * full support for scoring PSI-MI XML2.5 files (temporary serialization on the server side)
   * includes exemplary MITAB scoring calculator
+  * fixed synchronization bug that could potentially lead to scores not being included in the results file
   
 ==Client==
 
