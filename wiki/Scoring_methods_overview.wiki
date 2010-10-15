@@ -16,7 +16,7 @@ Further information: [http://mint.bio.uniroma2.it/mint/doc/MINT-confidence-score
 
 Reference: [http://www.ncbi.nlm.nih.gov/pubmed/17135203 Chatr-aryamontri A et al. MINT: the Molecular INTeraction database. Nucleic Acids Res. 2007 Jan;35(Database issue):D572-4]
 
-*PSISCORE server: [http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=mint]*
+*PSISCORE server: [http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=mint Listed in the PSISCORE registry]*
   
 
 ==iRefIndex scores==
@@ -35,7 +35,7 @@ Further information: [http://irefindex.uio.no/wiki/README_iRefIndex_MITAB_6.0#Co
 
 Reference: Razick et al. iRefIndex: A consolidated protein interaction database with provenance [http://www.biomedcentral.com/1471-2105/9/405/abstract]
 
-*PSISCORE server: [http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=irefindex]*
+*PSISCORE server: [http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=irefindex Listed in the PSISCORE registry]*
 
 ==MI score==
 The MI score is calculated based on the number of publications, the experimental detection methods and the interaction types that support a certain interaction.
