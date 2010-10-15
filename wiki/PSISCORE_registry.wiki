@@ -18,18 +18,25 @@ The full URL of the registry with all possible parameters can be seen below
 Through the `action` parameter you can define if you want to get a list of all available scoring server or if you want to list only those that are active/inactive.
 
 ||*value*||*description*||||*example*||
-||STATUS||list all available PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=STATUS http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=STATUS]||
-||ACTIVE||list only active PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=ACTIVE http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=ACTIVE]||
-||INACTIVE||list only inactive PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=INACTIVE http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=INACTIVE]||
+||STATUS||list all available PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=STATUS]||
+||ACTIVE||list only active PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=ACTIVE]||
+||INACTIVE||list only inactive PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=INACTIVE]||
  
 
 == the `format` parameter ==
 The `format` parameter defines the output format that the registry uses to present to results to you. 
 
 ||*value*||*description*||||*example*||
-||none||graphical output||[http://psiscore.bioinf.mpi-inf.mpg.de/registry http://psiscore.bioinf.mpi-inf.mpg.de/registry]||
-||XML||XML output, containing all the details of the graphical output||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=XML http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=XML]||
-||TXT||very simple plain text output, containing server name and SOAP URL only||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=TXT http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=TXT]||
+||none||graphical output||[http://psiscore.bioinf.mpi-inf.mpg.de/registry]||
+||XML||XML output, containing all the details of the graphical output||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=XML]||
+||TXT||very simple plain text output, containing server name and SOAP URL only||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=TXT]||
+
+== the `name` parameter ==
+The `name` parameter can be used to select a particular scoring server. If no scoring server with this name exists, the registry will not show any servers. 
+
+||*value*||*description*||||*example*||
+||none||all scoring servers will be listed||[http://psiscore.bioinf.mpi-inf.mpg.de/registry]||
+||name of a scoring server, e.g., "MINT"||only the scoring server with the same name will be listed ||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=MINT]||
 
 
 == Adding a new PSISCORE servers ==
