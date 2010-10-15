@@ -7,22 +7,14 @@
     <artifactId>psiscore-ws</artifactId>
     <packaging>war</packaging>
 
-<<<<<<< .mine
     <version>0.9.7-SNAPSHOT</version>
-=======
-    <version>0.9.5-SNAPSHOT</version>
->>>>>>> .r92
 
     <name>PSI :: PSISCORE WS Reference Implementation</name>
 	
 	
 
     <properties>
-<<<<<<< .mine
         <cxf.version>2.2.3</cxf.version>
-=======
-        <cxf.version>2.2.10</cxf.version>
->>>>>>> .r92
         <spring.version>2.5.6</spring.version>
 
 
@@ -402,7 +394,6 @@
     <dependencies>
 	    <dependency>
 			<groupId>psidev.psi.mi</groupId>
-<<<<<<< .mine
 			<artifactId>psimitab</artifactId>
 			<version>1.7.8-SNAPSHOT</version>
 			<exclusions>
@@ -425,26 +416,6 @@
 				  <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
 			 </exclusion>
 			</exclusions-->
-=======
-			<artifactId>psimitab</artifactId>
-			<version>1.7.8-SNAPSHOT</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
-			<!--exclusions>
-			  <exclusion>
-				  <groupId>org.apache.servicemix.bundles</groupId>
-				  <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
-			 </exclusion>
-			 <exclusion>
-				  <groupId>org.apache.servicemix.specs</groupId>
-				  <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
-			 </exclusion>
-			</exclusions-->
->>>>>>> .r92
         </dependency>
 		
 		
@@ -465,24 +436,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.5.6</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.6</version>
             <optional>true</optional>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
 
         <!-- Spring -->
@@ -490,56 +449,26 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>
             <version>${spring.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>${spring.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
 
         <!-- Apache CXF -->
@@ -547,45 +476,21 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-core</artifactId>
             <version>${cxf.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-simple</artifactId>
             <version>${cxf.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
             <version>${cxf.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxrs</artifactId>
             <version>${cxf.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -597,7 +502,6 @@
                     <groupId>org.apache.cxf</groupId>
                     <artifactId>cxf-rt-databinding-jaxb</artifactId>
                 </exclusion>
-<<<<<<< .mine
 				<!--exclusion>
 							<groupId>javax.activation</groupId>
 							<artifactId>activation</artifactId>
@@ -605,98 +509,44 @@
 
 						
 
-=======
-				<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-
-						
-
->>>>>>> .r92
             </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-databinding-aegis</artifactId>
             <version>${cxf.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-local</artifactId>
             <version>${cxf.version}</version>
-<<<<<<< .mine
 
-=======
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
->>>>>>> .r92
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
             <version>${cxf.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
             <version>${cxf.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-jms</artifactId>
             <version>${cxf.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-management</artifactId>
             <version>${cxf.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-common-utilities</artifactId>
             <version>${cxf.version}</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
 		
 
@@ -708,34 +558,16 @@
             <groupId>javax.ws.rs</groupId>
             <artifactId>jsr311-api</artifactId>
             <version>1.0</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
             <version>1.0.1</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
             <version>2.3.0</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
 
         <!-- Tests -->
@@ -744,24 +576,12 @@
             <artifactId>junit</artifactId>
             <version>4.2</version>
             <scope>test</scope>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
         </dependency>
 		
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.6</version>
-			<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
 		</dependency> 
 		
 		<dependency>
@@ -816,11 +636,7 @@
         <!-- for jaxb-impl -->
         <repository>
             <id>java.net</id>
-<<<<<<< .mine
             <url>http://download.java.net/maven/2</url>
-=======
-            <url>http://download.java.net/maven/</url>
->>>>>>> .r92
             <layout>legacy</layout>
 			
         </repository>
