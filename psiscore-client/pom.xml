@@ -3,7 +3,7 @@
 
     <groupId>org.hupo.psi.mi.psiscore</groupId>
     <artifactId>psiscore-client</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <version>0.9.7-SNAPSHOT</version>
 

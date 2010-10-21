@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psiscore.example;
+package org.hupo.psi.mi.psiscore.wsclient.example;
 
 import java.io.File;
 import java.io.IOException;
