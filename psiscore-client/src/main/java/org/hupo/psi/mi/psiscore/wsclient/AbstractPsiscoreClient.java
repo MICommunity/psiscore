@@ -44,7 +44,7 @@ public abstract class AbstractPsiscoreClient implements PsiscoreClientInterface 
     private PsiscoreService service;
 
     public AbstractPsiscoreClient(String serviceAddress) {
-        this(serviceAddress, 5000L);
+        this(serviceAddress, 15000L);
     }
 
     public AbstractPsiscoreClient(String serviceAddress, long timeout) {
@@ -68,7 +68,7 @@ public abstract class AbstractPsiscoreClient implements PsiscoreClientInterface 
 
         httpClientPolicy.setReceiveTimeout(timeout);
         httpClientPolicy.setAllowChunking(false);
-        httpClientPolicy.setConnectionTimeout(1000L);
+        httpClientPolicy.setConnectionTimeout(15000L);
         httpClientPolicy.setAcceptEncoding("UTF-8");
 
         http.setClient(httpClientPolicy);

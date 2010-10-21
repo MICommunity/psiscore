@@ -1,25 +1,20 @@
 package org.hupo.psi.mi.psiscore.wsclient;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
+
 
 import org.hupo.psi.mi.psiscore.AlgorithmDescriptor;
 import org.hupo.psi.mi.psiscore.JobResponse;
@@ -34,25 +29,7 @@ import org.hupo.psi.mi.psiscore.model.PsiscoreInput;
 import org.hupo.psi.mi.psiscore.util.PsiTools;
 import org.hupo.psi.mi.psiscore.wsclient.SimplePsiscoreClient;
 import org.hupo.psi.mi.psiscore.wsclient.PsiscoreClientException;
-
-import psidev.psi.mi.tab.converter.tab2xml.Tab2Xml;
-import psidev.psi.mi.tab.converter.tab2xml.XmlConversionException;
-import psidev.psi.mi.tab.converter.xml2tab.TabConversionException;
-import psidev.psi.mi.tab.converter.xml2tab.Xml2Tab;
-import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
-import psidev.psi.mi.tab.PsimiTabReader;
-import psidev.psi.mi.xml.converter.ConverterException;
-
-import psidev.psi.mi.xml.converter.impl254.EntryConverter;
-
-import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
-import psidev.psi.mi.xml.dao.inMemory.InMemoryDAOFactory;
-import psidev.psi.mi.xml.model.Confidence;
-import psidev.psi.mi.xml.model.Entry;
-import psidev.psi.mi.xml.model.Interaction;
-import psidev.psi.mi.xml.PsimiXmlReader;
-import psidev.psi.mi.xml.PsimiXmlReaderException;
+import org.hupo.psi.mi.psiscore.wsclient.config.PsiscoreClientProperties;
 
 
 /**
@@ -62,9 +39,9 @@ import psidev.psi.mi.xml.PsimiXmlReaderException;
  * @author hagen (mpi-inf,mpg)
  */
 public class PsiscoreMetaClient {
-	private Map<String, SimplePsiscoreClient> psiscoreServerClients = null;
+	protected Map<String, SimplePsiscoreClient> psiscoreServerClients = null;
 	private static Set<String> uniqueIds;
-	
+
 	
 	/**
 	 * Empty default constructor
@@ -92,17 +69,7 @@ public class PsiscoreMetaClient {
 		}
 	}
 	
-		
-	/**
-	 * Add a scoring server 
-	 * @param client
-	 * @return
-	 */
-	public String addPsiscoreClient(SimplePsiscoreClient client){
-		System.out.println("\t\tAdding new PsiscoreClient: " + client.getId());
-		this.psiscoreServerClients.put(client.getId(), client);
-		return client.getId();
-	}
+	
 	
 	/**
 	 * Create and add a client instance
@@ -117,6 +84,61 @@ public class PsiscoreMetaClient {
 			return addPsiscoreClient(client);
 		}
 	}
+	
+	
+	/**
+	 * Add a scoring server 
+	 * @param client
+	 * @return
+	 */
+	public String addPsiscoreClient(SimplePsiscoreClient client){
+		System.out.println("\t\tAdding new PsiscoreClient: " + client.getId());
+		this.psiscoreServerClients.put(client.getId(), client);
+		return client.getId();
+	}
+	
+	/**
+	 * 
+	 * @param registryUrl url to the command that retrieves the list of server 
+	 * from the registry. must be the simple format, i.e. server=url
+	 */
+	public Set<String> addServersFromRegistry(String registryUrl) throws PsiscoreClientException{
+		if (registryUrl == null || registryUrl.trim().length() == 0 || registryUrl.trim().equalsIgnoreCase("null")){
+			registryUrl = PsiscoreClientProperties.getInstance().getProperties().getProperty("registryCommand");
+		}
+		//System.out.println("URL: " + registryUrl);
+		URL registry = null;
+		try {
+			//System.out.println(registryUrl);
+			registry = new URL(registryUrl);
+			URLConnection yc = registry.openConnection();
+	        BufferedReader in = new BufferedReader(
+	                                new InputStreamReader(
+	                                yc.getInputStream()));
+	        
+	        String inputLine;
+	        String[] inputLineSplit = null;
+	        while ((inputLine = in.readLine()) != null) {
+	        	inputLineSplit = inputLine.split("=");
+	        	if (inputLineSplit.length != 2){
+	        		throw new PsiscoreClientException("There was a problem while contacting the registry ", new PsiscoreFault());
+	        	}
+	        	createAndAddPsiscoreClient(inputLineSplit[1]);
+	        }
+	        in.close();
+	        
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new PsiscoreClientException("Unable to contact the PSISCORE registry", new PsiscoreFault(), e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new PsiscoreClientException("Unable to contact the PSISCORE registry", new PsiscoreFault(), e);
+		} 
+		return psiscoreServerClients.keySet();
+	}
+	
 	
 	/**
 	 * Get all client instances that are managed
@@ -210,29 +232,43 @@ public class PsiscoreMetaClient {
 	 * @throws PsiscoreClientException
 	 */
 	public QueryResponse getJobs(Map<String, JobResponse> ids) throws PsiscoreException, InvalidArgumentException, JobStillRunningException, PsiscoreClientException{
+		//System.out.println("GET JOBS");
+		if (ids == null){
+			throw new InvalidArgumentException("No jobs to retrieve", new PsiscoreFault());
+		}
 		ResultSet rs = null;
 		QueryResponse response = null;
 		Report report = null;
 		PsiscoreInput input = null;
 		Iterator<Map.Entry<String, JobResponse>> it = ids.entrySet().iterator();
 		while (it.hasNext()){
-			Map.Entry<String, JobResponse> pair = it.next();
 			
-			QueryResponse serverResponse = getJob(pair.getKey(), pair.getValue().getJobId());
+			Map.Entry<String, JobResponse> pair = it.next();
+			//System.out.println("JOB: " + pair.getKey() );
+			QueryResponse serverResponse = null;
+			try{
+				serverResponse = getJob(pair.getKey(), pair.getValue().getJobId());
+			}catch(InvalidArgumentException e){
+				e.printStackTrace();
+			}
 			
 			if (serverResponse == null){
 				throw new JobStillRunningException("Server " + pair.getKey() + " has not finished scoring", new PsiscoreFault());
 			}
 			ResultSet newRs = serverResponse.getResultSet();
+			PsiscoreInput scoredData =  PsiTools.getInstance().getPsiscoreInput(newRs);
 			if (input == null){
-				input = PsiTools.getPsiscoreInput(newRs);
+				//System.out.println("new scoredData");
+				input = scoredData;
 				report = serverResponse.getReport();
 			}else{
-				PsiTools.addConfidencesToPsiscoreInput(input, PsiTools.getPsiscoreInput(newRs));
+				
+				//System.out.println("got scoredData");
+				PsiTools.getInstance().addConfidencesToPsiscoreInput(input, scoredData);
 				report.getResults().addAll(serverResponse.getReport().getResults());
 			}
 		}
-		rs = PsiTools.getResultSet(input);
+		rs = PsiTools.getInstance().getResultSet(input);
 		response = new QueryResponse();
 		response.setResultSet(rs);
 		response.setReport(report);
@@ -314,7 +350,7 @@ public class PsiscoreMetaClient {
 	 * @throws PsiscoreException
 	 * @throws InvalidArgumentException
 	 */
-	public Map<String, JobResponse> submitJob(ResultSet inputData, List<AlgorithmDescriptor> descriptors) throws PsiscoreClientException, PsiscoreException, InvalidArgumentException{
+	public Map<String, JobResponse> submitJobList(ResultSet inputData, List<AlgorithmDescriptor> descriptors, String returnFormat) throws PsiscoreClientException, PsiscoreException, InvalidArgumentException{
 		Map<String, JobResponse> jobResponses = new HashMap<String, JobResponse>();
 		Iterator<Map.Entry<String, SimplePsiscoreClient>> clientIterator = psiscoreServerClients.entrySet().iterator();
     	
@@ -322,8 +358,38 @@ public class PsiscoreMetaClient {
 	    	
 	    	Map.Entry<String, SimplePsiscoreClient> pair = clientIterator.next();
 	    	SimplePsiscoreClient currentClient = pair.getValue();
-	    	JobResponse response = currentClient.submitJob(descriptors, inputData, "psimi/tab25");
+	    	JobResponse response = currentClient.submitJob(descriptors, inputData, returnFormat);
 	    	jobResponses.put(currentClient.getId(), response);
+	    }
+	    
+		return jobResponses;
+	}
+	
+	
+	/**
+	 * Submit a scoring job to all servers
+	 * @param inputData
+	 * @param descriptors
+	 * @return
+	 * @throws PsiscoreClientException
+	 * @throws PsiscoreException
+	 * @throws InvalidArgumentException
+	 */
+	public Map<String, JobResponse> submitJobMap(ResultSet inputData, Map<String, List<AlgorithmDescriptor>> descriptors, String returnFormat) throws PsiscoreClientException, PsiscoreException, InvalidArgumentException{
+		Map<String, JobResponse> jobResponses = new HashMap<String, JobResponse>();
+		Iterator<Map.Entry<String, SimplePsiscoreClient>> clientIterator = psiscoreServerClients.entrySet().iterator();
+    			
+	    while (clientIterator.hasNext()){
+	    	Map.Entry<String, SimplePsiscoreClient> pair = clientIterator.next();
+	    	SimplePsiscoreClient currentClient = pair.getValue();
+	    	List<AlgorithmDescriptor> algorithms = descriptors.get(pair.getKey());
+	    	// only submit the job to a server if there is an algorithm request from it
+	    	if (algorithms != null){
+	    		JobResponse response = currentClient.submitJob(algorithms, inputData, returnFormat);
+	    		jobResponses.put(currentClient.getId(), response);
+	    	}
+	    	pair = null;
+	    	currentClient = null;
 	    }
 	    
 		return jobResponses;
@@ -342,10 +408,11 @@ public class PsiscoreMetaClient {
      */
     public boolean validateInput(org.hupo.psi.mi.psiscore.ResultSet resultSet) throws PsiscoreClientException, PsiscoreException, InvalidArgumentException{
     	psidev.psi.mi.xml.model.EntrySet entrySet = null;
-    	entrySet = PsiTools.getEntrySetFromInput(resultSet);
+    	entrySet = PsiTools.getInstance().getEntrySetFromInput(resultSet);
     	if (entrySet == null){
 			throw new InvalidArgumentException("No valid input data (MITAB or PSIMI XML) detected", new PsiscoreFault());
 		}
+    	entrySet = null;
 		return true;
     }
     

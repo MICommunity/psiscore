@@ -18,6 +18,7 @@ package org.hupo.psi.mi.psiscore.util;
 import org.hupo.psi.mi.psiscore.*;
 import org.hupo.psi.mi.psiscore.model.PsiscoreInput;
 
+
 import psidev.psi.mi.xml.PsimiXmlReader;
 import psidev.psi.mi.xml.PsimiXmlReaderException;
 import psidev.psi.mi.xml.PsimiXmlWriter;
@@ -47,11 +48,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 
 /**
@@ -65,6 +70,16 @@ public class PsiTools{
 	public static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
 	public static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
 	private static final String NEW_LINE = System.getProperty("line.separator");
+	
+	private static PsiTools instance = new PsiTools();
+    
+    private PsiTools(){
+    	
+    }
+
+    public static PsiTools getInstance() {
+        return instance;
+    }
 
     
    /**
@@ -74,7 +89,7 @@ public class PsiTools{
     * @throws InvalidArgumentException
     * @throws PsiscoreException
     */
-    public static final String getInputFormat(ResultSet inputData) throws InvalidArgumentException, PsiscoreException{
+    public String getInputFormat(ResultSet inputData) throws InvalidArgumentException, PsiscoreException{
     	String inputFormat = null;
     	if (inputData.getEntrySet() != null && inputData.getMitab() != null){
     		throw new InvalidArgumentException("Only use PSI-MI XML or PSI-MI TAB, not both ", new PsiscoreFault());
@@ -92,7 +107,7 @@ public class PsiTools{
     
     
     
-    public static final String getInputFormat(PsiscoreInput inputData) throws InvalidArgumentException, PsiscoreException{
+    public String getInputFormat(PsiscoreInput inputData) throws InvalidArgumentException, PsiscoreException{
     	String inputFormat = null;
     	if (inputData.xmlUsed() && inputData.mitabUsed()){
     		throw new InvalidArgumentException("Only use PSI-MI XML or PSI-MI TAB, not both ", new PsiscoreFault());
@@ -119,14 +134,14 @@ public class PsiTools{
      * @throws PsiscoreException Exception that occurs while parsing
      * @throws InvalidArgumentException If a MITAB file has been transmitted that is not valid
      */
-    public static final psidev.psi.mi.xml.model.EntrySet getEntrySetFromMitabString(String mitab) throws PsiscoreException, InvalidArgumentException{
+    public psidev.psi.mi.xml.model.EntrySet getEntrySetFromMitabString(String mitab) throws PsiscoreException, InvalidArgumentException{
     	
     	Collection<BinaryInteraction> binaryInteractions = getBinaryInteractionsFromMitab(mitab);
     	return getEntrySetFromBinaryInteractions(binaryInteractions);
     }
     
     
-    public static final psidev.psi.mi.xml.model.EntrySet getEntrySetFromBinaryInteractions(Collection<BinaryInteraction> interactions) throws PsiscoreException{
+    public psidev.psi.mi.xml.model.EntrySet getEntrySetFromBinaryInteractions(Collection<BinaryInteraction> interactions) throws PsiscoreException{
     	
     	psidev.psi.mi.xml.model.EntrySet entrySet = null;
     	
@@ -143,7 +158,7 @@ public class PsiTools{
 		return entrySet;
     }
     
-    public static final Collection<BinaryInteraction> getBinaryInteractionsFromMitab(String mitab) throws PsiscoreException, InvalidArgumentException{
+    public Collection<BinaryInteraction> getBinaryInteractionsFromMitab(String mitab) throws PsiscoreException, InvalidArgumentException{
     	PsimiTabReader reader = new PsimiTabReader(false);
     	Collection<BinaryInteraction> binaryInteractions = null;
     	psidev.psi.mi.xml.model.EntrySet entrySet = null;
@@ -186,20 +201,23 @@ public class PsiTools{
      * @throws InvalidArgumentException 
      * @throws PsiscoreException 
      */
-    public static final psidev.psi.mi.xml.model.EntrySet getEntrySetFromInput(ResultSet inputData) throws InvalidArgumentException, PsiscoreException{
+    public psidev.psi.mi.xml.model.EntrySet getEntrySetFromInput(ResultSet inputData) throws InvalidArgumentException, PsiscoreException{
     	psidev.psi.mi.xml.model.EntrySet entrySet = null;
+    	psidev.psi.mi.xml254.jaxb.EntrySet jaxbEntrySet = null;
+    	EntrySetConverter converter = null;
     	//xml
     	if (inputData.getEntrySet() != null){
 			try {
-				psidev.psi.mi.xml254.jaxb.EntrySet jaxbEntrySet = inputData.getEntrySet();
-				List<?> entries = jaxbEntrySet.getEntries();
-				Iterator<?> it= entries.iterator();
-				EntrySetConverter converter = new EntrySetConverter();
+				jaxbEntrySet = inputData.getEntrySet();
+				converter = new EntrySetConverter();
 				converter.setDAOFactory(new InMemoryDAOFactory());
 				entrySet = converter.fromJaxb(jaxbEntrySet);
 			} catch (ConverterException e) {
 				e.printStackTrace();
 			    throw new InvalidArgumentException("Problem converting from the PSI MI 2.5.4 model to the generic one", new PsiscoreFault());
+			}finally{
+				jaxbEntrySet = null;
+				converter = null;
 			}
     	}
     	//mitab
@@ -223,34 +241,38 @@ public class PsiTools{
      * @throws InvalidArgumentException
      * @throws PsiscoreException
      */
-    public static final PsiscoreInput getPsiscoreInput(ResultSet inputData) throws InvalidArgumentException, PsiscoreException{
+    public PsiscoreInput getPsiscoreInput(ResultSet inputData) throws InvalidArgumentException, PsiscoreException{
     	PsiscoreInput input = new PsiscoreInput();
-    	
-    	//xml
+    	psidev.psi.mi.xml254.jaxb.EntrySet jaxbEntrySet = null;
+		EntrySetConverter converter = null;
+		EntrySet entrySet = null;
+		//xml
     	if (inputData.getEntrySet() != null){
 			try {
-				psidev.psi.mi.xml254.jaxb.EntrySet jaxbEntrySet = inputData.getEntrySet();
-				List<?> entries = jaxbEntrySet.getEntries();
-				Iterator<?> it= entries.iterator();
-				EntrySetConverter converter = new EntrySetConverter();
+				jaxbEntrySet = inputData.getEntrySet();
+				converter = new EntrySetConverter();
 				converter.setDAOFactory(new InMemoryDAOFactory());
-				EntrySet entrySet = converter.fromJaxb(jaxbEntrySet);
+				entrySet = converter.fromJaxb(jaxbEntrySet);
 				input.setXmlEntySet(entrySet);
 				input.setPrimaryInput(RETURN_TYPE_XML25);
 			} catch (ConverterException e) {
 				e.printStackTrace();
 			    throw new InvalidArgumentException("Problem converting from the PSI-MI 2.5.4 model to the generic one", new PsiscoreFault());
+			}finally{
+				jaxbEntrySet = null;
+				converter = null;
 			}
     	}
     	//mitab
+    	
 		if (!input.xmlUsed()&& inputData.getMitab() != null){
 			Collection<BinaryInteraction> interactions = getBinaryInteractionsFromMitab(inputData.getMitab());
 			input.setMitabInteractions(interactions);
 			input.setPrimaryInput(RETURN_TYPE_MITAB25);
-			
 		}
 		
 		if (!input.xmlUsed() && !input.mitabUsed()){
+			input = null;
 			throw new InvalidArgumentException("No valid input data (MITAB or PSIMI XML) detected", new PsiscoreFault());
 		}
 		
@@ -264,7 +286,7 @@ public class PsiTools{
 	 * @param binaryInteractions
 	 * @return
 	 */
-    public static final String createMitabResults(Collection<BinaryInteraction> binaryInteractions) {
+    public String createMitabResults(Collection<BinaryInteraction> binaryInteractions) {
 		MitabDocumentDefinition docDef = new MitabDocumentDefinition();
 		StringBuilder sb = new StringBuilder(binaryInteractions.size() * 512);
 	
@@ -283,7 +305,7 @@ public class PsiTools{
 	 * @return
 	 * @throws PsiscoreException
 	 */
-    public static final psidev.psi.mi.xml254.jaxb.EntrySet createXmlEntrySet(List<BinaryInteraction> binaryInteractions) throws PsiscoreException {
+    public psidev.psi.mi.xml254.jaxb.EntrySet createXmlEntrySet(List<BinaryInteraction> binaryInteractions) throws PsiscoreException {
 		if (binaryInteractions.isEmpty()) {
 			return new psidev.psi.mi.xml254.jaxb.EntrySet();
 		}
@@ -305,7 +327,7 @@ public class PsiTools{
 	}
     
     
-    public static final ResultSet getResultSet(psidev.psi.mi.xml.model.EntrySet entrySet, String returnFormat) throws PsiscoreException{
+    public ResultSet getResultSet(psidev.psi.mi.xml.model.EntrySet entrySet, String returnFormat) throws PsiscoreException{
 		ResultSet rs = new ResultSet();
 		if (returnFormat.equals(RETURN_TYPE_XML25)){
 			try {
@@ -334,7 +356,7 @@ public class PsiTools{
 	}
     
     
-    public static final ResultSet getResultSet(PsiscoreInput inputData) throws PsiscoreException{
+    public ResultSet getResultSet(PsiscoreInput inputData) throws PsiscoreException{
 		ResultSet rs = new ResultSet();
 		if (inputData.xmlUsed() && !inputData.getPrimaryInput().equals(RETURN_TYPE_MITAB25)){
 			try {
@@ -357,7 +379,8 @@ public class PsiTools{
 	}
     
 
-    public static final void addConfidencesToPsiscoreInput(PsiscoreInput oldInputData, PsiscoreInput scoredInput) throws PsiscoreException{
+    public void addConfidencesToPsiscoreInput(PsiscoreInput oldInputData, PsiscoreInput scoredInput) throws PsiscoreException{
+    	
     	if (oldInputData.getPrimaryInput().equals(RETURN_TYPE_XML25) && scoredInput.xmlUsed()){
     		//System.out.println("Will add XML confidences to XML model");
     		addConfidencesToEntrySet(oldInputData.getXmlEntySet(), scoredInput.getXmlEntySet());
@@ -377,7 +400,7 @@ public class PsiTools{
     }
 
     
-    public static final void addConfidencesToEntrySet(psidev.psi.mi.xml.model.EntrySet oldEntrySet, psidev.psi.mi.xml.model.EntrySet newEntrySet) throws PsiscoreException{
+    public void addConfidencesToEntrySet(psidev.psi.mi.xml.model.EntrySet oldEntrySet, psidev.psi.mi.xml.model.EntrySet newEntrySet) throws PsiscoreException{
     	Iterator<Entry> oldIt = oldEntrySet.getEntries().iterator();
 		Iterator<Entry> newIt = newEntrySet.getEntries().iterator();
 		// go through all new interactions and see if we have to add any confidences
@@ -389,21 +412,31 @@ public class PsiTools{
 			Entry oldEntry = oldIt.next();
 			Collection<Interaction> newInteractions = newEntry.getInteractions();
 			Collection<Interaction> oldInteractions = oldEntry.getInteractions();
-			
 			Iterator<Interaction> newIntIt = newInteractions.iterator();
 			Iterator<Interaction> oldIntIt = oldInteractions.iterator();
 			while (newIntIt.hasNext()){
 				Interaction newInteraction = newIntIt.next();
+				if (!oldIntIt.hasNext()){
+					throw new PsiscoreException("Trying to merge confidences for different files, this should not happen!", new PsiscoreFault());
+				}
 				Interaction oldInteraction = oldIntIt.next();
 				if (!sameInteraction(newInteraction, oldInteraction)){
 					throw new PsiscoreException("Trying to match different interactions", new PsiscoreFault());
 				}
-				addConfidenceCollectionToCollection(oldInteraction.getConfidences(), newInteraction.getConfidences());
+				PsiTools.getInstance().addConfidenceCollectionToCollection(oldInteraction.getConfidences(), newInteraction.getConfidences());
+				newInteraction = null;
 			}
+			newEntry = null;
+			newInteractions = null;
+			newIntIt = null;
+			oldIntIt = null;
 		}
+		oldIt = null;
+		newIt = null;
+	
     }
     
-    public static final void addConfidencesToEntrySet(psidev.psi.mi.xml.model.EntrySet oldEntrySet, Collection<BinaryInteraction> newInteractions) throws PsiscoreException{
+    public void addConfidencesToEntrySet(psidev.psi.mi.xml.model.EntrySet oldEntrySet, Collection<BinaryInteraction> newInteractions) throws PsiscoreException{
     	Iterator<Entry> oldIt = oldEntrySet.getEntries().iterator();
 
 		while (oldIt.hasNext()){
@@ -414,6 +447,9 @@ public class PsiTools{
 			Iterator<BinaryInteraction> newIntIt = newInteractions.iterator();
 			
 			while (newIntIt.hasNext()){
+				if (!oldIntIt.hasNext()){
+					throw new PsiscoreException("Trying to merge confidences for different files, this should not happen!", new PsiscoreFault());
+				}
 				Interaction oldInteraction = oldIntIt.next();
 				BinaryInteraction newInteraction = newIntIt.next();
 				
@@ -421,27 +457,36 @@ public class PsiTools{
 					throw new PsiscoreException("Trying to match different interactions", new PsiscoreFault());
 				}
 				addConfidenceListToCollection(oldInteraction.getConfidences(), newInteraction.getConfidenceValues());
+				newInteraction = null;
 			}
+			oldIntIt = null;
+			newIntIt = null;
 		}
     }
     
-    public static final void addConfidencesToBinaryInteractions(Collection<BinaryInteraction> oldInteractions, Collection<BinaryInteraction> newInteractions) throws PsiscoreException{
+    public void addConfidencesToBinaryInteractions(Collection<BinaryInteraction> oldInteractions, Collection<BinaryInteraction> newInteractions) throws PsiscoreException{
 		Iterator<BinaryInteraction> newIntIt = newInteractions.iterator();
 		Iterator<BinaryInteraction> oldIntIt = oldInteractions.iterator();
 		while (newIntIt.hasNext()){
 			BinaryInteraction newInteraction = newIntIt.next();
+			if (!oldIntIt.hasNext()){
+				throw new PsiscoreException("Trying to merge confidences for different files, this should not happen!", new PsiscoreFault());
+			}
 			BinaryInteraction oldInteraction = oldIntIt.next();
 			
 			if (!sameInteraction(newInteraction, oldInteraction)){
 				throw new PsiscoreException("Trying to match different binary interactions", new PsiscoreFault());
 			}
+			
 			addConfidenceListToList(oldInteraction.getConfidenceValues(), newInteraction.getConfidenceValues());
+			newInteraction = null;
 		}
-		
+		newIntIt = null;
+		oldIntIt = null;
     }
     
     
-    public static final void addConfidencesToBinaryInteractions(Collection<BinaryInteraction> oldInteractions, psidev.psi.mi.xml.model.EntrySet newEntrySet) throws PsiscoreException{
+    public void addConfidencesToBinaryInteractions(Collection<BinaryInteraction> oldInteractions, psidev.psi.mi.xml.model.EntrySet newEntrySet) throws PsiscoreException{
     	Iterator<Entry> newIt = newEntrySet.getEntries().iterator();
 		// go through all new interactions and see if we have to add any confidences
 		while (newIt.hasNext()){
@@ -453,44 +498,56 @@ public class PsiTools{
 			Iterator<BinaryInteraction> oldIntIt = oldInteractions.iterator();
 			while (newIntIt.hasNext()){
 				Interaction newInteraction = newIntIt.next();
-				BinaryInteraction binaryInteraction = oldIntIt.next();
+				if (!oldIntIt.hasNext()){
+					throw new PsiscoreException("Trying to merge confidences for different files, this should not happen!", new PsiscoreFault());
+				}
+				BinaryInteraction oldInteraction = oldIntIt.next();
 				
-				if (!sameInteraction(newInteraction, binaryInteraction)){
+				if (!sameInteraction(newInteraction, oldInteraction)){
 					throw new PsiscoreException("Trying to match different interactions", new PsiscoreFault());
 				}
-				addConfidenceCollectionToList(binaryInteraction.getConfidenceValues(), newInteraction.getConfidences());
+				oldInteraction.getConfidenceValues();
+				addConfidenceCollectionToList(oldInteraction.getConfidenceValues(), newInteraction.getConfidences());
+				newInteraction = null;
 			}
+			newEntry = null;
+			newInteractions = null;
+			newIntIt = null;
+			oldIntIt = null;
 		}
+		newIt = null;
 
     }
     
-
     
-    
-    
-    
-    public static void addConfidenceCollectionToList(List<psidev.psi.mi.tab.model.Confidence> oldConfidences, Collection<Confidence> newConfidences){
+    public void addConfidenceCollectionToList(List<psidev.psi.mi.tab.model.Confidence> oldConfidences, Collection<Confidence> newConfidences){
     	Collection<psidev.psi.mi.tab.model.Confidence> trulyNewConfidences = new ArrayList<psidev.psi.mi.tab.model.Confidence>();
     	Iterator<Confidence> newConfIt = newConfidences.iterator();
 		while(newConfIt.hasNext()){
 			boolean haveConfidence = false;
 			Confidence newConfidence = newConfIt.next();
-			Iterator<psidev.psi.mi.tab.model.Confidence> oldConfIt = oldConfidences.iterator();
-    		while(oldConfIt.hasNext()){
-    			psidev.psi.mi.tab.model.Confidence oldConfidence = oldConfIt.next();
-    			if (sameConfidence(oldConfidence, newConfidence )){
-    				haveConfidence = true;
-   			}
-    		}
+			if (oldConfidences != null){
+				Iterator<psidev.psi.mi.tab.model.Confidence> oldConfIt = oldConfidences.iterator();
+	    		while(oldConfIt.hasNext()){
+	    			psidev.psi.mi.tab.model.Confidence oldConfidence = oldConfIt.next();
+	    			if (sameConfidenceTabXml(oldConfidence, newConfidence )){
+	    				haveConfidence = true;
+	    			}
+	    		}
+	    		oldConfIt = null;
+			}
     		if (!haveConfidence){
     			trulyNewConfidences.add(ConfidenceGenerator.convertConfidence(newConfidence));
+    			
     		}
-
+    		newConfidence = null;
 		}
+		newConfIt = null;
 		oldConfidences.addAll(trulyNewConfidences);
     }
     
-    public static void addConfidenceListToCollection(Collection<Confidence> oldConfidences, List<psidev.psi.mi.tab.model.Confidence> newConfidences){
+    
+    public void addConfidenceListToCollection(Collection<Confidence> oldConfidences, List<psidev.psi.mi.tab.model.Confidence> newConfidences){
     	// first iterate through all old confidences and see if they are also part of the
     	// new confidences. if so, remove them from teh new confidences
     	Collection<Confidence> trulyNewConfidences = new ArrayList<Confidence>();
@@ -498,23 +555,29 @@ public class PsiTools{
 		while(newConfIt.hasNext()){
 			boolean haveConfidence = false;
 			psidev.psi.mi.tab.model.Confidence newConfidence = newConfIt.next();
-    		Iterator<Confidence> oldConfIt = oldConfidences.iterator();
-    		while(oldConfIt.hasNext()){
-    			Confidence oldConfidence = oldConfIt.next(); 
-    			if (!sameConfidence(newConfidence, oldConfidence)){
-    				haveConfidence = true;
-    			}
-    		}
+			if (oldConfidences != null){
+	    		Iterator<Confidence> oldConfIt = oldConfidences.iterator();
+	    		while(oldConfIt.hasNext()){
+	    			Confidence oldConfidence = oldConfIt.next(); 
+	    			if (sameConfidenceTabXml(newConfidence, oldConfidence)){
+	    				haveConfidence = true;
+	    			}
+	    		}
+	    		oldConfIt = null;
+			}
     		if (!haveConfidence){
     			trulyNewConfidences.add(ConfidenceGenerator.convertConfidence(newConfidence));
     		}
+    		newConfidence = null;
+    		
 		}
+		newConfIt = null;
 		oldConfidences.addAll(trulyNewConfidences);
 
     }
     
     
-    public static void addConfidenceCollectionToCollection(Collection<Confidence> oldConfidences, Collection<Confidence> newConfidences){
+    public void addConfidenceCollectionToCollection(Collection<Confidence> oldConfidences, Collection<Confidence> newConfidences){
 		// first iterate through all old confidences and see if they are also part of the
     	// new confidences. if so, remove them from teh new confidences
     	Collection<Confidence> trulyNewConfidences = new ArrayList<Confidence>();
@@ -522,22 +585,28 @@ public class PsiTools{
 		while(newConfIt.hasNext()){
 			boolean haveConfidence = false;
     		Confidence newConfidence = newConfIt.next();
-    		Iterator<Confidence> oldConfIt = oldConfidences.iterator();
-    		while(oldConfIt.hasNext()){
-    			Confidence oldConfidence = oldConfIt.next(); 
-    			if (!sameConfidence(oldConfidence, newConfidence)){
-    				haveConfidence = true;
-    			}
+    		if (oldConfidences != null){
+	    		Iterator<Confidence> oldConfIt = oldConfidences.iterator();
+	    		while(oldConfIt.hasNext()){
+	    			Confidence oldConfidence = oldConfIt.next(); 
+	    			if (sameConfidenceXmlXml(oldConfidence, newConfidence)){
+	    				haveConfidence = true;
+	    			}
+	    		}
+	    		oldConfIt = null;
     		}
     		if (!haveConfidence){
     			trulyNewConfidences.add(newConfidence);
     		}
+    		newConfidence = null;
+    		
 		}
+		newConfIt = null;
 		oldConfidences.addAll(trulyNewConfidences);
     }
     
     
-    public static void addConfidenceListToList(List<psidev.psi.mi.tab.model.Confidence> oldConfidences, List<psidev.psi.mi.tab.model.Confidence> newConfidences){
+    public void addConfidenceListToList(List<psidev.psi.mi.tab.model.Confidence> oldConfidences, List<psidev.psi.mi.tab.model.Confidence> newConfidences){
 		// first iterate through all old confidences and see if they are also part of the
     	// new confidences. if so, remove them from teh new confidences
     	Collection<psidev.psi.mi.tab.model.Confidence> trulyNewConfidences = new ArrayList<psidev.psi.mi.tab.model.Confidence>();
@@ -545,17 +614,23 @@ public class PsiTools{
 		while(newConfIt.hasNext()){
 			boolean haveConfidence = false;
 			psidev.psi.mi.tab.model.Confidence newConfidence = newConfIt.next();
-			Iterator<psidev.psi.mi.tab.model.Confidence> oldConfIt = oldConfidences.iterator();
-    		while(oldConfIt.hasNext()){
-    			psidev.psi.mi.tab.model.Confidence oldConfidence = newConfIt.next();
-    			if (!sameConfidence(oldConfidence, newConfidence )){
-    				haveConfidence = true;
-    			}
-    		}
+			if (oldConfidences != null){
+				Iterator<psidev.psi.mi.tab.model.Confidence> oldConfIt = oldConfidences.iterator();
+	    		while(oldConfIt.hasNext()){
+	    			psidev.psi.mi.tab.model.Confidence oldConfidence = oldConfIt.next();
+	    			if (sameConfidenceTabTab(oldConfidence, newConfidence )){
+	    				haveConfidence = true;
+	    			}
+	    		}
+	    		oldConfIt = null;
+			}
     		if (!haveConfidence){
     			trulyNewConfidences.add(newConfidence);
     		}
+    		newConfidence = null;
+    		
 		}
+		newConfIt = null;
 		oldConfidences.addAll(trulyNewConfidences);
     }
     
@@ -568,8 +643,8 @@ public class PsiTools{
      * @param binaryInteraction
      * @return
      */
-    public static boolean sameInteraction(Interaction xmlInteraction, BinaryInteraction binaryInteraction){
-    	// TODO fix me!!
+    public boolean sameInteraction(Interaction xmlInteraction, BinaryInteraction binaryInteraction){
+    	// TODO proper check if the entries describe the same interaction
     	return true;
     	
     }
@@ -583,16 +658,18 @@ public class PsiTools{
      * @param xmlInteractionB
      * @return
      */
-    public static boolean sameInteraction(Interaction xmlInteractionA, Interaction xmlInteractionB){
-    	if (xmlInteractionA.equals(xmlInteractionB)){
+    public boolean sameInteraction(Interaction xmlInteractionA, Interaction xmlInteractionB){
+    	/*if (xmlInteractionA.equals(xmlInteractionB)){
     		return true;
     	}else{
     		return false;
-    	}
+    	}*/
+    	// TODO proper check if the entries describe the same interaction 
+    	return true;
     		
     }
     
-    public static boolean sameInteraction(BinaryInteraction binaryInteractionA, BinaryInteraction binaryInteractionB){
+    public boolean sameInteraction(BinaryInteraction binaryInteractionA, BinaryInteraction binaryInteractionB){
     	/*Collection<CrossReference> referencesA1 = binaryInteractionA.getInteractorA().getIdentifiers();
     	Collection<CrossReference> referencesA2 = binaryInteractionA.getInteractorB().getIdentifiers();
     	Collection<CrossReference> referencesB1 = binaryInteractionB.getInteractorA().getIdentifiers();
@@ -601,11 +678,13 @@ public class PsiTools{
     	while(a1It.hasNext()){
     		if(a1It.next()..getDatabase())
     		*/
-    	if (binaryInteractionA.equals(binaryInteractionB)){
+    	/*if (binaryInteractionA.equals(binaryInteractionB)){
     		return true;
     	}else{
     		return false;
-    	}
+    	}*/
+    	// TODO proper check if the entries describe the same interaction
+    	return true;
     }
    
     
@@ -615,8 +694,9 @@ public class PsiTools{
      * @param xmlConfidenceB
      * @return
      */
-    public static boolean sameConfidence(Confidence xmlConfidenceA, Confidence xmlConfidenceB){
-    	if (xmlConfidenceA.equals(xmlConfidenceB)){
+    public boolean sameConfidenceXmlXml(Confidence xmlConfidenceA, Confidence xmlConfidenceB){
+    	if (xmlConfidenceA.getValue().equals(xmlConfidenceB.getValue()) 
+    			&& xmlConfidenceA.getUnit().equals(xmlConfidenceB.getUnit())){
     		return true;
     	}else{
     		return false;
@@ -630,13 +710,27 @@ public class PsiTools{
      * @param xmlConfidenceB
      * @return
      */
-    public static boolean sameConfidence(psidev.psi.mi.tab.model.Confidence tabConfidence, Confidence xmlConfidence){
-    	if (tabConfidence.getValue().equalsIgnoreCase(xmlConfidence.getValue()) &&
-    		tabConfidence.getText().equalsIgnoreCase(xmlConfidence.getUnit().getNames().getFullName())){
-    		return true;
+    public boolean sameConfidenceTabXml(psidev.psi.mi.tab.model.Confidence tabConfidence, Confidence xmlConfidence){
+    	if (tabConfidence.getValue().equalsIgnoreCase(xmlConfidence.getValue())){
+    		if (tabConfidence.getText() != null){
+    			if (tabConfidence.getText().equalsIgnoreCase(xmlConfidence.getUnit().getNames().getFullName())){
+    				return true;
+    			}
+    			else{
+    				return false;
+    			}
+    		}else if (tabConfidence.getType() != null){
+    			if (tabConfidence.getType().equalsIgnoreCase(xmlConfidence.getUnit().getNames().getShortLabel())){
+    				return true;
+    			}
+    			else{
+    				return false;
+    			}
+    		}
     	}else{
     		return false;
     	}
+    	return false;
     }
     
     /**
@@ -645,10 +739,26 @@ public class PsiTools{
      * @param tabConfidenceB
      * @return
      */
-    public static boolean sameConfidence(psidev.psi.mi.tab.model.Confidence tabConfidenceA, psidev.psi.mi.tab.model.Confidence tabConfidenceB){
-    	if (tabConfidenceA.getValue().equalsIgnoreCase(tabConfidenceB.getValue()) &&
-    		tabConfidenceA.getText().equalsIgnoreCase(tabConfidenceB.getText()) &&
-    		tabConfidenceA.getType().equalsIgnoreCase(tabConfidenceB.getType())){
+    public boolean sameConfidenceTabTab(psidev.psi.mi.tab.model.Confidence tabConfidenceA, psidev.psi.mi.tab.model.Confidence tabConfidenceB){
+    	boolean sameValue = false;
+    	boolean sameText = false;
+    	boolean sameType = false;
+    	if (tabConfidenceA.getValue() != null && tabConfidenceB.getValue() != null){
+    		if (tabConfidenceA.getValue().equalsIgnoreCase(tabConfidenceB.getValue())){
+    			sameValue = true;
+    		}
+    	}
+    	if (tabConfidenceA.getText() != null && tabConfidenceB.getText() != null){
+    		if (tabConfidenceA.getText().equalsIgnoreCase(tabConfidenceB.getText())){
+    			sameText = true;
+    		}
+    	}
+    	if (tabConfidenceA.getType() != null && tabConfidenceB.getType() != null){
+    		if (tabConfidenceA.getType().equalsIgnoreCase(tabConfidenceB.getType())){
+    			sameType = true;
+    		}
+    	}
+    	if ((sameText && sameValue) || (sameType && sameValue)){
     		return true;
     	}else{
     		return false;
@@ -657,26 +767,55 @@ public class PsiTools{
     
     
 
-    public static String readFromUrl(String urlString) throws PsiscoreException, InvalidArgumentException{
-    	StringBuffer fBuf = new StringBuffer(); 
+    
+
+    public String readFromUrl(String urlString) throws PsiscoreException, InvalidArgumentException{
+    	StringBuilder content = new StringBuilder();
+    	URL url = null;
+    	InputStream in = null;
+    	InputStreamReader inRead = null;
+    	BufferedReader buffRead = null;
     	try {
-			URL url = new URL(urlString);
-			InputStream in = url.openStream ();
-			BufferedReader dis = new BufferedReader (new InputStreamReader (in));
-			fBuf = new StringBuffer() ;
+			url = new URL(urlString);
+			in = url.openStream ();
+			inRead = new InputStreamReader (in);
+			buffRead = new BufferedReader (inRead);
 			String line;
-			while (	( line = dis.readLine ()) != null) {
-		        fBuf.append (line + NEW_LINE);
+			
+			while (	( line = buffRead.readLine ()) != null) {
+				content.append(line + NEW_LINE);
+				line = null;
 			}
-			in.close();
+			line = null;
+			
     	}catch (IOException e) {
 	       throw new InvalidArgumentException("File not found", new PsiscoreFault(), e);
+	    }finally{
+	    	try{
+	    		if (buffRead != null){
+	    			buffRead.close();
+	    			buffRead = null;
+	    		}if (inRead != null){
+	    			inRead.close();
+	    			inRead = null;
+	    		}
+	    		if (in != null){
+	    			in.close();
+	    			in = null;
+	    		}
+	    	}catch(Exception e2){
+	    		e2.printStackTrace();
+	    	}
+	    	url = null;
 	    }
-	    return fBuf.toString();
+	    String ret =  content.toString();
+	    
+	    content = null;
+	    return ret;
     }
     
     
-    public static String readMitab(String path) throws PsiscoreException{
+    public String readMitab(String path) throws PsiscoreException{
     	StringBuffer mitab = new StringBuffer();
     	try{
     		FileInputStream fstream;
@@ -700,7 +839,7 @@ public class PsiTools{
     return mitab.toString();
     }
     
-    public static void writeEntrySetToFile(EntrySet entrySet, String path) throws PsiscoreException{
+    public void writeEntrySetToFile(EntrySet entrySet, String path) throws PsiscoreException{
 	    PsimiXmlWriter writer = new PsimiXmlWriter();
 		try {
 			writer.write(entrySet, new File(path));
@@ -710,7 +849,7 @@ public class PsiTools{
 		}
     }
     
-    public static void writeXmlEntrySetToFile(psidev.psi.mi.xml254.jaxb.EntrySet jaxbEntrySet, String path) throws PsiscoreException{
+    public void writeXmlEntrySetToFile(psidev.psi.mi.xml254.jaxb.EntrySet jaxbEntrySet, String path) throws PsiscoreException{
     	EntrySetConverter converter = new EntrySetConverter();
 		converter.setDAOFactory(new InMemoryDAOFactory());
 		EntrySet entrySet;
@@ -721,10 +860,8 @@ public class PsiTools{
 		}
 		writeEntrySetToFile(entrySet, path);
     }
-        
     
-    public static psidev.psi.mi.xml254.jaxb.EntrySet readXmlEntrySetFromFile(String path) throws PsiscoreException{
-    	psidev.psi.mi.xml.model.EntrySet entrySet = readEntrySetFromFile(path);
+    public psidev.psi.mi.xml254.jaxb.EntrySet entrySetXmlModelToJaxb(psidev.psi.mi.xml.model.EntrySet entrySet) throws PsiscoreException{
     	psidev.psi.mi.xml254.jaxb.EntrySet jaxbEntrySet = null;
     	EntrySetConverter converter = new EntrySetConverter();
 		converter.setDAOFactory(new InMemoryDAOFactory());
@@ -735,10 +872,31 @@ public class PsiTools{
 		}
 		
     	return jaxbEntrySet;
-
+    	
     }
     
-    public static psidev.psi.mi.xml.model.EntrySet readEntrySetFromFile(String path) throws PsiscoreException{
+    public psidev.psi.mi.xml.model.EntrySet entrySetJaxbToXmlModel(psidev.psi.mi.xml254.jaxb.EntrySet jaxbEntrySet) throws PsiscoreException{
+    	psidev.psi.mi.xml.model.EntrySet entrySet = null;
+    	EntrySetConverter converter = new EntrySetConverter();
+		converter.setDAOFactory(new InMemoryDAOFactory());
+		try {
+			entrySet = converter.fromJaxb(jaxbEntrySet);
+		} catch (ConverterException e) {
+			throw new PsiscoreException("Cannot convert XML model to PSI MI XML model ", new PsiscoreFault(), e);
+		}
+		
+    	return entrySet;
+    	
+    }
+        
+    
+    public psidev.psi.mi.xml254.jaxb.EntrySet readXmlEntrySetFromFile(String path) throws PsiscoreException{
+    	psidev.psi.mi.xml.model.EntrySet entrySet = readEntrySetFromFile(path);
+    	return entrySetXmlModelToJaxb(entrySet);
+    }
+    
+    
+    public psidev.psi.mi.xml.model.EntrySet readEntrySetFromFile(String path) throws PsiscoreException{
     	psidev.psi.mi.xml.model.EntrySet entrySet = null;
     	InputStream inStream = PsiTools.class.getResourceAsStream(path);
     	PsimiXmlReader reader = new PsimiXmlReader();
@@ -753,9 +911,15 @@ public class PsiTools{
 		return entrySet;
     }
     
-    public static void main(String[] args) throws PsiscoreException, InvalidArgumentException{
+    
+    
+    
+    public static void main(String[] args) throws PsiscoreException, InvalidArgumentException, IOException{
     	//System.out.println(readFromUrl("http://tutorials.jenkov.com/java-networking/urls-local-files.html"));
-    	System.out.println(readFromUrl("file:D:/mitab.txt"));
+    	
+    	//System.out.println(PsiTools.getInstance().readFromUrl("file:D:/mitab.txt"));
+    	
+    	
     	
 	    
     }
