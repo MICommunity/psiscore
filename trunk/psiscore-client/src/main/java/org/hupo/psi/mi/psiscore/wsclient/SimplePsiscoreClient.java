@@ -33,6 +33,7 @@ import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.xml.converter.ConverterException;
 import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
 import psidev.psi.mi.xml.dao.inMemory.InMemoryDAOFactory;
+import psidev.psi.mi.xml.model.EntrySet;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -46,11 +47,6 @@ import java.util.List;
  * @author hagen (mpi-inf,mpg)
  */
 public class SimplePsiscoreClient extends AbstractPsiscoreClient {
-	public static final String MESSAGE_JOB_FINISHED = "finished";
-	public static final String MESSAGE_JOB_RUNNING = "running";
-	public static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
-	public static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
-	
 	private boolean active = true;
 	private String id = null;
 	
@@ -147,7 +143,7 @@ public class SimplePsiscoreClient extends AbstractPsiscoreClient {
 	 * @throws PsiscoreException
 	 */
     public JobResponse submitJob(java.util.List<org.hupo.psi.mi.psiscore.AlgorithmDescriptor> algorithmDescriptors, org.hupo.psi.mi.psiscore.ResultSet inputData, String returnFormat) throws PsiscoreClientException, PsiscoreException, InvalidArgumentException{
-    	validateInput(algorithmDescriptors, inputData);
+    	//validateInput(algorithmDescriptors, inputData);
     	
     	try{
     		return getService().submitJob(algorithmDescriptors, inputData, returnFormat);
@@ -180,7 +176,8 @@ public class SimplePsiscoreClient extends AbstractPsiscoreClient {
      * @throws InvalidArgumentException
      */
     private boolean validateInput(java.util.List<org.hupo.psi.mi.psiscore.AlgorithmDescriptor> algorithmDescriptor, org.hupo.psi.mi.psiscore.ResultSet inputData) throws PsiscoreClientException, PsiscoreException, InvalidArgumentException{
-    	PsiTools.getEntrySetFromInput(inputData);
+    	EntrySet rs = PsiTools.getInstance().getEntrySetFromInput(inputData);
+    	rs = null;
     	return true;
     }
 
