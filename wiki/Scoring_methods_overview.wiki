@@ -44,7 +44,7 @@ Range: 0-1
 
 Further information: [https://docs.google.com/Doc?docid=0AQ_p-HKWUjHoZGQ5cGNtcmhfMjJ2ZDdwcDhmag&hl=en https://docs.google.com/Doc?docid=0AQ_p-HKWUjHoZGQ5cGNtcmhfMjJ2ZDdwcDhmag&hl=en]
 
-*PSISCORE server: currently under development*
+*PSISCORE server: [http://psiscore.bioinf.mpi-inf.mpg.de/registry Listed in the PSISCORE registry]*
 
 ==Braun et al.==
 Braun et al. propose an experimentally derived confidence score for binary protein interactions. 
