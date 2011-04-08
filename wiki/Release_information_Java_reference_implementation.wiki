@@ -37,6 +37,7 @@ The current versions can be found in the [http://code.google.com/p/psiscore/down
 ==Client==
 
 ===0.9.5-SNAPSHOT===
+  * several bug fixes
 
 ===0.9-SNAPSHOT===
   * initial proof-of-concept release
