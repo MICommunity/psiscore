@@ -2,42 +2,42 @@
 #labels Phase-Deploy,Phase-Support
 
 = Introduction =
-The [http://psiscore.bioinf.mpi-inf.mpg.de/registry PSISCORE registry] maintains a list of all available scoring servers and their scoring routines. This allows new service providers to make their resource available to PSISCORE clients simply by registering it with the registry. The registry can be queried in an automatic fashion in the way described below, or it can be browsed online. 
+The [http://psiscore.bioinf.mpi-inf.mpg.de/registry PSISCORE Registry] maintains a list of all available scoring servers and their scoring routines. This allows new service providers to make their resource available to PSISCORE clients simply by including it into Registry. The Registry can be queried in an automatic fashion or it can be browsed via a dedicated website. 
 
-The PSISCORE registry can be found at
+The PSISCORE Registry can be found at
 *[http://psiscore.bioinf.mpi-inf.mpg.de/registry http://psiscore.bioinf.mpi-inf.mpg.de/registry]*. 
 
-= Accessing the registry = 
-If you open the [http://psiscore.bioinf.mpi-inf.mpg.de/registry PSISCORE registry] in a browser you will see a graphical representation of the available scoring servers. You can influence the response of the registry with certain parameters, which have been chosen to correspond to the [http://code.google.com/p/psicquic/wiki/Registry PISCQUIC registry] whereever possible. 
+= Accessing the Registry = 
+If you open the [http://psiscore.bioinf.mpi-inf.mpg.de/registry PSISCORE Registry] in a web browser you will see a tabular representation of the available scoring servers. You can influence the Registry response through a number of parameters (which have been chosen to correspond to the [http://code.google.com/p/psicquic/wiki/Registry PISCQUIC Registry] whereever possible). 
 
-The full URL of the registry with all possible parameters can be seen below
+The full URL of the Registry with all possible parameters can be seen below
 
 `http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=${ACTION}&format=${FORMAT}&name=${NAME}`
 
 == the `action` parameter ==
-Through the `action` parameter you can define if you want to get a list of all available scoring server or if you want to list only those that are active/inactive.
+The `action` parameter defines if you will get a list of all available scoring server or only those that are active/inactive. 
 
 ||*value*||*description*||||*example*||
 ||STATUS||list all available PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=STATUS]||
-||ACTIVE||list only active PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=ACTIVE]||
-||INACTIVE||list only inactive PSISCORE servers||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=INACTIVE]||
+||ACTIVE||list only active PSISCORE servers, i.e., those that are online||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=ACTIVE]||
+||INACTIVE||list only inactive PSISCORE servers, i.e., those that cannot currently be contacted by the Registry||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=INACTIVE]||
  
 
 == the `format` parameter ==
-The `format` parameter defines the output format that the registry uses to present to results to you. 
+The `format` parameter defines the output format that the Registry uses to present the results. 
 
 ||*value*||*description*||||*example*||
-||none||graphical output||[http://psiscore.bioinf.mpi-inf.mpg.de/registry]||
-||XML||XML output, containing all the details of the graphical output||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=XML]||
-||TXT||very simple plain text output, containing server name and SOAP URL only||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=TXT]||
+||none||tabular HTML output||[http://psiscore.bioinf.mpi-inf.mpg.de/registry]||
+||XML||XML output, containing most of the information shown in the HTML output||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=XML]||
+||TXT||basic text output, containing only server name and SOAP URL||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?format=TXT]||
 
 
 == the `name` parameter ==
-The `name` parameter can be used to select a particular scoring server. If no scoring server with this name exists, the registry will not show any servers. 
+The `name` parameter can be used to limit the query to a particular scoring server, for instance, to retrieve only its scoring methods. If no scoring server with the name exists, the Registry will not show any results. The name parameter is not case-sensitive.
 
 ||*value*||*description*||||*example*||
 ||none||all scoring servers will be listed||[http://psiscore.bioinf.mpi-inf.mpg.de/registry]||
-||name of a scoring server, e.g., "MINT"||only the scoring server with the same name will be listed ||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=MINT]||
+||name of a scoring server, e.g., "MINT" or "mint"||only the scoring server with the same name will be listed ||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=MINT]||
 
 
 == Examples ==
@@ -49,8 +49,8 @@ Get an HTML page describing the MINT scoring server:
 
 
 == Adding a new PSISCORE servers ==
-At the moment, the PSISCORE registry is manually maintained, there is no way to automatically register your service. Therefore, please send the address of your service that is to be included in the registry to hagen (at) mpi-inf.mpg.de. It will be included in the registry as quick as possible. 
+The PSISCORE Registry maintained manually. If you want to registry a new service, please send the name and server adress together with a short description of each scoring method that the service provides to hagen (at) mpi-inf.mpg.de. It will be included in the Registry as quick as possible. 
 
 
 == Description of scoring methods ==
-PSISCORE servers provide a short description in the form of keywords for each scoring method they offer. These keywords are intended for automatic classification or selection of certain methods, but they do not provide the user with a comprehensive description of the algorithm details. Therefore, each scoring algorithm should also be defined in the Molecular Interactions controlled vocabulary (MI CV, http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI). As the confidence section of the MI CV is still under development, this description is currently also maintained by the PSISCORE registry. 
+PSISCORE servers have to provide a short description in the form of keywords for each scoring method they offer. These keywords should ideally be picked from the [http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI Molecular Interactions controlled vocabulary]. Keywords are intended for automatic classification or selection of certain methods, but they do not provide the user with a comprehensive description of the algorithm details. Therefore, a textual description and optional links to further documentation (for instance, to an external website or a publication) have to be provided as well. 
