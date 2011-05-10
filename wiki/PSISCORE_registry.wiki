@@ -12,7 +12,9 @@ If you open the [http://psiscore.bioinf.mpi-inf.mpg.de/registry PSISCORE Registr
 
 The full URL of the Registry with all possible parameters can be seen below
 
-`http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=${ACTION}&format=${FORMAT}&name=${NAME}`
+{{{
+http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=${ACTION}&format=${FORMAT}&name=${NAME} 
+}}}
 
 == the `action` parameter ==
 The `action` parameter defines if you will get a list of all available scoring server or only those that are active/inactive. 
@@ -40,13 +42,50 @@ The `name` parameter can be used to limit the query to a particular scoring serv
 ||name of a scoring server, e.g., "MINT" or "mint"||only the scoring server with the same name will be listed ||[http://psiscore.bioinf.mpi-inf.mpg.de/registry?name=MINT]||
 
 
-== Examples ==
-Get all active scoring servers in XML format:
-[http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?format=xml&action=active]
+== Programatically accessing the Registry ==
+As described above, you can retrieve a list of scoring servers in different machine readable formats. 
 
-Get an HTML page describing the MINT scoring server:
-[http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?name=mint]
+====Plain text====
+If you are only interested in the scoring server and their SOAP adresses, the fastest way is to request a plain text response.
 
+You can use this query to retrieve all active scoring servers:
+{{{
+http://psiscore.bioinf.mpi-inf.mpg.de/registry?action=active&format=txt
+}}}
+The response will look like this:
+{{{
+IRefIndex=http://irefindex.uio.no/psiscore-ws/webservices/psiscore
+MINT=http://mint.bio.uniroma2.it/psiscore-ws-0.9.7-SNAPSHOT/webservices/psiscore
+MI Score=http://www.ebi.ac.uk/enfin-srv/miscore/webservices/psiscore
+MPII=http://psiscore.bioinf.mpi-inf.mpg.de/psiscorews/webservices/psiscore
+}}}
+Each line describes a PSISCORE server, consisting of a unique ID and the SOAP adress for the server. PSISCORE being a decentralized system, the response to this query will change over time.
+
+====XML====
+In case you want to retrieve additional information, such as descriptions of the individual scoring methods, you have to use the XML based format. The following query will retrieve the descirption of all scoring methods that the iRefIndex scoring server provides.
+{{{
+http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?name=irefindex&format=xml
+}}}
+
+The response will look like this (response is shortened):
+
+{{{
+
+<registry>
+  <service>
+    <name>IRefIndex</name>
+    <soapUrl>http://irefindex.uio.no/psiscore-ws/webservices/psiscore</soapUrl>
+    <active>TRUE</active>
+    <version>0.9.7-SNAPSHOT</version>
+    <algorithmDescriptor>
+      <id>np-number_pmids</id>
+      <algorithmType>literature based</algorithmType>
+      <range>0-inf</range>
+    </algorithmDescriptor>
+  </service>
+</registry>
+}}}
+Not that there can be multiple `algorithmDescriptor` elements within a `service` element, each representing a different scoring method.
 
 == Adding a new PSISCORE servers ==
 The PSISCORE Registry maintained manually. If you want to registry a new service, please send the name and server adress together with a short description of each scoring method that the service provides to hagen (at) mpi-inf.mpg.de. It will be included in the Registry as quick as possible. 
