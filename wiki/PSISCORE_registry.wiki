@@ -64,24 +64,25 @@ Each line describes a PSISCORE server, consisting of a unique ID and the SOAP ad
 ====XML====
 In case you want to retrieve additional information, such as descriptions of the individual scoring methods, you have to use the XML based format. The following query will retrieve the descirption of all scoring methods that the iRefIndex scoring server provides.
 
-[http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?name=irefindex&format=xml]
+[http://psiscore.bioinf.mpi-inf.mpg.de/registry.php?name=mi%20score&format=xml]
 
 
 The response will look like this (response is shortened):
 
 {{{
-
 <registry>
   <service>
-    <name>IRefIndex</name>
-    <soapUrl>http://irefindex.uio.no/psiscore-ws/webservices/psiscore</soapUrl>
-    <active>TRUE</active>
-    <version>0.9.7-SNAPSHOT</version>
-    <algorithmDescriptor>
-      <id>np-number_pmids</id>
-      <algorithmType>literature based</algorithmType>
-      <range>0-inf</range>
-    </algorithmDescriptor>
+  <name>MI Score</name>
+  <soapUrl>http://www.ebi.ac.uk/enfin-srv/miscore/webservices/psiscore</soapUrl>
+  <active>TRUE</active>
+  <version>0.9.7-SNAPSHOT</version>
+  <algorithmDescriptor>
+    <id>MIscore - intact plus imex curation</id>
+    <algorithmType>Replication-based</algorithmType>
+    <algorithmType>Method-based</algorithmType>
+    <description>A score between 0 and 1 is assigned to each interaction. This score is designed to calculate annotation evidence based on information curated to IMEx or MIMIx standards reporting a molecular interaction experiment. This method will look for annotation evidences coming from all the interaction reported in the IntAct PSICQUIC service and all the IMEX interactions reported by IMEX PSICQUIC services. </description>
+    <range>0-1</range>
+  </algorithmDescriptor>
   </service>
 </registry>
 }}}
