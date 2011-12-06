@@ -1,13 +1,7 @@
 #summary PSISCORE Wiki overview.
-#sidebar TableOfContents
-= PSISCORE details =
 
-All the nitty-gritty details of PSISCORE.
-
-= For PSISCORE server providers =
-
-These pages are relevant for users that want to provide their confidence measure via a PSISCORE service.
-
-= For PSISCORE users =
-
-These pages are relevant for those that want to have access to confidence scores via PSISCRE.
+* [General General details]
+  * [PSISCORE_definition PSISCORE Definition]
+* [Server For Service Providers]
+  * [PSISCORE_web_service_implementation_details Implementation details]
+* [Uer For Users]
