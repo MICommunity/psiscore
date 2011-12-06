@@ -1,7 +1,8 @@
 #summary PSISCORE Wiki overview.
 
-* [GeneralInformation General information]
+* General information
   * [PSISCORE_definition PSISCORE Definition]
-* [Server For Service Providers]
+* For service providers
   * [PSISCORE_web_service_implementation_details Implementation details]
-* [Uer For Users]
+* For users
+  * [PSISCORE_client_Java_reference_implementation Jave reference implementation]
