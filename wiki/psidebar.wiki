@@ -1,5 +1,5 @@
 #summary PSISCORE Wiki overview.
-
+#sidebar TableOfContents
 = PSISCORE details =
 
 All the nitty-gritty details of PSISCORE.
