@@ -1,6 +1,5 @@
 #summary Registry of available PSISCORE servers
 #labels Phase-Deploy,Phase-Support
-#sidebar psidebar
 
 = Introduction =
 The [http://psiscore.bioinf.mpi-inf.mpg.de/registry PSISCORE Registry] maintains a list of all available scoring servers and their scoring routines. This allows new service providers to make their resource available to PSISCORE clients simply by including it into Registry. The Registry can be queried in an automatic fashion or it can be browsed via a dedicated website. 
