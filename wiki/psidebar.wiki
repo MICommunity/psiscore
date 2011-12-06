@@ -2,8 +2,10 @@
 
 * General Information *
   * [PSISCORE_definition PSISCORE Definition] *
-  * [PSISCORE_registry Psiscore Registry] 
+  * [PSISCORE_registry Psiscore Registry] *
+----
 * For Service Providers * 
   * [PSISCORE_web_service_implementation_details Implementation details] *
+----
 * For Users *
   * [PSISCORE_client_Java_reference_implementation Java Client Reference Implementation] *
