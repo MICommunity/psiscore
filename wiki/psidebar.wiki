@@ -1,6 +1,6 @@
 #summary PSISCORE Wiki overview.
 
-* [General General details]
+* [GeneralInformation General information]
   * [PSISCORE_definition PSISCORE Definition]
 * [Server For Service Providers]
   * [PSISCORE_web_service_implementation_details Implementation details]
