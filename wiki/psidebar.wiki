@@ -1,4 +1,4 @@
-#summary PSISCORE Wiki overview.
+#summary PSISCORE Wiki Overview.
 
   * *General Information*
     * [PSISCORE_definition PSISCORE Definition]
