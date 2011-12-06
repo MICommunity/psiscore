@@ -1,13 +1,13 @@
-#summary One-sentence summary of this page.
+#summary PSISCORE Wiki overview.
 
-= Introduction =
+= PSISCORE details =
 
-Add your content here.
+All the nitty-gritty details of PSISCORE.
 
+= For PSISCORE server providers =
 
-= Details =
+These pages are relevant for users that want to provide their confidence measure via a PSISCORE service.
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+= For PSISCORE users =
+
+These pages are relevant for those that want to have access to confidence scores via PSISCRE.
