@@ -1,6 +1,0 @@
-#summary General Information
-
-= Introduction =
-
-This page links to the general information related to PSISCORE, such as the service definition.
-
